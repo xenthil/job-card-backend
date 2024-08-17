@@ -16,7 +16,7 @@ const login = async(request:Request, response:Response)=>{
                 data:errMsg
            });
         }
-        let data = await auth(value);
+        let data = await auth(value,response);
         return sendResponse(request,response,data);
     }catch(e){
         return sendResponse(request,response,{

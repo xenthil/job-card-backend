@@ -1,10 +1,11 @@
+import { Response } from 'express-serve-static-core';
 import { prisma } from '../prisma/lib'
 import { Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { STATUS_CODE, RESPONSE_MESSAGE } from "../utils/constants/ResponseStatus"
 
-const auth = async(data:any)=>{
+const auth = async(data:any,response:Response)=>{
    try{
         const user:any = await prisma.user.findFirst({
             where : {
@@ -39,6 +40,12 @@ const auth = async(data:any)=>{
                 token
             }
         })
+
+        response.cookie('token', token, { 
+            maxAge: 24 * 60 * 60 * 1000, 
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production' 
+        });
 
         let res = {
             status : STATUS_CODE.SUCCESS_CODE,

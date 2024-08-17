@@ -24,7 +24,6 @@ model User {
 model Client {
   id Int @id @default(autoincrement())
   clientName String @map("client_name")
-  email String  
   status Boolean?
   address ClientAddress[]
   MaterialInward MaterialInward[]
@@ -40,14 +39,13 @@ model ClientAddress {
   clientId Int @map("client_id")
   client Client @relation(fields: [clientId],references: [id])
   email String?
-  conatact Int
+  contact String
   address String?
   area String?
   city String?
-  pincode Int?
+  pincode String?
   contactPersonName String? @map("contact_person_name")
   contactPersonContact String? @map("contact_person_contact")
-  contactPersonEmail String? @map("contact_person_email")
   description String?
   status Boolean?
   createdAt DateTime @default(now())
