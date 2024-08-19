@@ -178,6 +178,16 @@ model Material{
   @@map("material")
 }
 
+model JoType{
+  id Int @id @default(autoincrement())
+  name String
+  status Boolean?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("job_type")
+}
+
 model InventoryDetails{
   id Int @id @default(autoincrement())
   materialId Int @map("material_id")

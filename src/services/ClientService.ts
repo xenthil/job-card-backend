@@ -46,8 +46,9 @@ const createClient = async(data:any)=>{
 const fetchClient = async(query:any)=>{
     try{
        
-        const page = query?.page ?? 1; 
-        const limit = query?.limit ?? 10; 
+        const page = query?.page  ? parseInt(query?.page) : 1; 
+        const limit = query?.limit ? parseInt(query?.limit) : 10;  
+       
         const client = await prisma.client.findMany({
             skip: (page - 1) * limit, 
             take: limit, 
@@ -55,10 +56,11 @@ const fetchClient = async(query:any)=>{
                 address: true 
             }
         });
+        const count:number = await prisma.client.count();
         let response = {
             status : STATUS_CODE.SUCCESS_CODE,
             message : "Client has been fetched successfully",
-            data : client
+            data : {client,count}
         }
         return response
     }catch(errors){
