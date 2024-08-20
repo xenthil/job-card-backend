@@ -4,7 +4,6 @@ import { sendResponse } from '../utils/handleResponse'
 import { userValidations, loginValidations } from "../validations/UserValidations"
 import { STATUS_CODE, RESPONSE_MESSAGE } from "../utils/constants/ResponseStatus"
 
-
 const login = async(request:Request, response:Response)=>{
     try{
         let inputs = request.body;
