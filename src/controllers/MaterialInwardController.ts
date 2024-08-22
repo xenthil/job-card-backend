@@ -1,13 +1,15 @@
 import { Request, Response } from "express"
-import { createClient, fetchClient, update, remove, fetchAllClient } from '../services/ClientService'
+import { create, get, update, remove } from '../services/MaterialInwardService'
 import { sendResponse } from '../utils/handleResponse'
 import { STATUS_CODE, RESPONSE_MESSAGE } from "../utils/constants/ResponseStatus"
+import { fileUpload } from "../utils/FileUpload"
 
 
-const addClient = async(request:Request, response:Response)=>{
+const addMaterialInward = async(request:Request, response:Response)=>{
     try{
         let inputs = request.body;
-        let data = await createClient(inputs);
+        // let { files} = await fileUpload('materialInward','dcImage',request,response)
+        let data = await create(inputs);
         return sendResponse(request,response,data);
     }catch(e){
         return sendResponse(request,response,{
@@ -17,10 +19,10 @@ const addClient = async(request:Request, response:Response)=>{
     }
 }
 
-const getClient = async(request:Request, response:Response)=>{
+const getMaterialInward = async(request:Request, response:Response)=>{
     try{
         let query = request.query;
-        let data = await fetchClient(query);
+        let data = await get(query);
         return sendResponse(request,response,data);
     }catch(e){
         return sendResponse(request,response,{
@@ -30,7 +32,7 @@ const getClient = async(request:Request, response:Response)=>{
     }
 }
 
-const updateClient = async(request:Request, response:Response)=>{
+const updateMaterialInward = async(request:Request, response:Response)=>{
     try{
         let inputs = request.body;
         let data = await update(inputs);
@@ -43,7 +45,7 @@ const updateClient = async(request:Request, response:Response)=>{
     }
 }
 
-const removeClient = async(request:Request, response:Response)=>{
+const removeMaterialInward = async(request:Request, response:Response)=>{
     try{
         let inputs = request.body;
         let data = await remove(inputs);
@@ -56,18 +58,8 @@ const removeClient = async(request:Request, response:Response)=>{
     }
 }
 
-const getAllClient = async(request:Request, response:Response)=>{
-    try{
-        let data = await fetchAllClient();
-        return sendResponse(request,response,data);
-    }catch(e){
-        return sendResponse(request,response,{
-            status : STATUS_CODE.SERVER_ERROR_CODE,
-            message : RESPONSE_MESSAGE.INTERNAL_ERROR
-        });
-    }
-}
 
 
 
-export { addClient, getClient,updateClient, removeClient ,getAllClient }
+
+export { addMaterialInward, getMaterialInward,updateMaterialInward, removeMaterialInward  }

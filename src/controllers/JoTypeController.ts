@@ -13,8 +13,9 @@ export const addJoType = async (request: Request, response: Response): Promise<R
   try {
     const inputs = request.body;
     const data = await createJoTypeService(inputs);
-    return sendResponse(request, response, data);
+    return sendResponse(request, response, {status:STATUS_CODE.SUCCESS_CODE,message:"Job type Added successfully",data});
   } catch (e) {
+    console.log('e',e)
     return sendResponse(request, response, {
       status: STATUS_CODE.SERVER_ERROR_CODE,
       message: RESPONSE_MESSAGE.INTERNAL_ERROR

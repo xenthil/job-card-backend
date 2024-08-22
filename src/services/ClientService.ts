@@ -73,6 +73,32 @@ const fetchClient = async(query:any)=>{
     }
 }
 
+const fetchAllClient = async()=>{
+    try{
+        const client = await prisma.client.findMany({
+            include: {
+                address: true 
+            }
+        });
+        const count:number = await prisma.client.count();
+        let response = {
+            status : STATUS_CODE.SUCCESS_CODE,
+            message : "Client has been fetched successfully",
+            data : {client,count}
+        }
+        return response
+    }catch(errors){
+        console.log('err',errors)
+        let error = {
+            status : STATUS_CODE.SERVER_ERROR_CODE,
+            message : RESPONSE_MESSAGE.INTERNAL_ERROR
+        }
+        return error;
+    }
+}
+
+
+
 const update = async(data:any)=>{
     try{
        
@@ -167,4 +193,4 @@ const remove = async(data:any)=>{
     }
 }
 
-export { createClient ,fetchClient, update, remove };
+export { createClient ,fetchClient, update, remove,fetchAllClient };

@@ -49,12 +49,15 @@ CREATE TABLE "material_inward" (
     "id" SERIAL NOT NULL,
     "client_id" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
+    "no_of_materials" INTEGER NOT NULL,
+    "dc_number" INTEGER NOT NULL,
     "dc_image" TEXT,
     "received_date" TIMESTAMP(3) NOT NULL,
     "estimated_dispatch_date" TIMESTAMP(3) NOT NULL,
-    "material_numbers" INTEGER,
+    "coating_required" TEXT,
+    "inspection" TEXT,
     "is_qty_approved" INTEGER,
-    "rejection_reason" TEXT NOT NULL,
+    "rejection_reason" TEXT,
     "job_id" TEXT,
     "job_type" TEXT,
     "job_status" TEXT,
@@ -66,20 +69,17 @@ CREATE TABLE "material_inward" (
 );
 
 -- CreateTable
-CREATE TABLE "Material_inward_details" (
+CREATE TABLE "material_inward_details" (
     "id" SERIAL NOT NULL,
     "material_inward_id" INTEGER NOT NULL,
-    "material_dc_number" TEXT NOT NULL,
     "material" TEXT NOT NULL,
     "thickness" TEXT NOT NULL,
-    "material_qty" INTEGER NOT NULL,
-    "description" TEXT NOT NULL,
 
-    CONSTRAINT "Material_inward_details_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "material_inward_details_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "material_process" (
+CREATE TABLE "material_production" (
     "id" SERIAL NOT NULL,
     "material_inward_id" INTEGER NOT NULL,
     "received_qty" INTEGER NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE "material_process" (
     "assigned_shift" TEXT NOT NULL,
     "manager" TEXT,
 
-    CONSTRAINT "material_process_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "material_production_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -159,6 +159,17 @@ CREATE TABLE "material" (
 );
 
 -- CreateTable
+CREATE TABLE "job_type" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "status" BOOLEAN,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "job_type_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "inventory_details" (
     "id" SERIAL NOT NULL,
     "material_id" INTEGER NOT NULL,
@@ -193,10 +204,10 @@ ALTER TABLE "client_address" ADD CONSTRAINT "client_address_client_id_fkey" FORE
 ALTER TABLE "material_inward" ADD CONSTRAINT "material_inward_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "clients"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Material_inward_details" ADD CONSTRAINT "Material_inward_details_material_inward_id_fkey" FOREIGN KEY ("material_inward_id") REFERENCES "material_inward"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "material_inward_details" ADD CONSTRAINT "material_inward_details_material_inward_id_fkey" FOREIGN KEY ("material_inward_id") REFERENCES "material_inward"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "material_process" ADD CONSTRAINT "material_process_material_inward_id_fkey" FOREIGN KEY ("material_inward_id") REFERENCES "material_inward"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "material_production" ADD CONSTRAINT "material_production_material_inward_id_fkey" FOREIGN KEY ("material_inward_id") REFERENCES "material_inward"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "material_filing" ADD CONSTRAINT "material_filing_material_inward_id_fkey" FOREIGN KEY ("material_inward_id") REFERENCES "material_inward"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -59,19 +59,22 @@ model MaterialInward {
   clientId Int @map("client_id")
   client Client @relation(fields: [clientId],references: [id])
   quantity Int
+  noOfMaterials Int @map("no_of_materials") 
+  dcNumber Int @map("dc_number") 
   dcImage String? @map("dc_image")
   receivedDate DateTime @map("received_date")
   estimatedDispatchDate DateTime @map("estimated_dispatch_date")
-  materialNumbers Int? @map("material_numbers")
+  coatingRequired String? @map("coating_required")
+  inspection String? 
   isQtyApproved Int? @map("is_qty_approved")
-  rejectionReason String @map("rejection_reason")
+  rejectionReason String? @map("rejection_reason")
   jobId String? @map("job_id")
   jobType String? @map("job_type")
   jobStatus String? @map("job_status")
   status Boolean?
   expectedMaterialExpenses ExpectedMaterialExpenses[]
   materialInwardDetails MaterialInwardDetails[]
-  materialProcess MaterialProcess[]
+  materialProduction MaterialProduction[]
   materialFiling MaterialFiling[]
   materialDispatch MaterialDispatch[]
   createdAt DateTime @default(now())
@@ -84,17 +87,14 @@ model MaterialInwardDetails{
   id Int @id @default(autoincrement())
   materialInwardId Int @map("material_inward_id")
   materialInward MaterialInward @relation(fields: [materialInwardId],references: [id])
-  materialDcNumber String @map("material_dc_number")
   material String
   thickness String
-  materialQty Int @map("material_qty")
-  description String
-
-  @@map("Material_inward_details")
+  
+  @@map("material_inward_details")
 }
 
 
-model MaterialProcess{
+model MaterialProduction{
   id Int @id @default(autoincrement())
   materialInwardId Int @map("material_inward_id")
   materialInward MaterialInward @relation(fields: [materialInwardId],references: [id])
@@ -106,7 +106,7 @@ model MaterialProcess{
   assignedShift String @map("assigned_shift")
   manager String?
     
-  @@map("material_process")
+  @@map("material_production")
 }
 
 model MaterialFiling{
