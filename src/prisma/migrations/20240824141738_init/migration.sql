@@ -8,6 +8,7 @@ CREATE TABLE "users" (
     "status" BOOLEAN,
     "token" TEXT,
     "role" TEXT,
+    "shif_id" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -51,7 +52,7 @@ CREATE TABLE "material_inward" (
     "client_id" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
     "no_of_materials" INTEGER NOT NULL,
-    "dc_number" INTEGER NOT NULL,
+    "dc_number" TEXT,
     "dc_image" TEXT,
     "received_date" TIMESTAMP(3) NOT NULL,
     "estimated_dispatch_date" TIMESTAMP(3) NOT NULL,
@@ -95,7 +96,7 @@ CREATE TABLE "material_production" (
     "achived_coating" TEXT,
     "zinc_starting_level" TEXT,
     "zinc_ending_level" TEXT,
-    "status" BOOLEAN,
+    "status" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -115,7 +116,7 @@ CREATE TABLE "material_filing" (
     "shift_incharge" INTEGER NOT NULL,
     "remarks" TEXT,
     "contractor" TEXT,
-    "status" BOOLEAN,
+    "status" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -182,6 +183,9 @@ CREATE TABLE "material" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_shif_id_fkey" FOREIGN KEY ("shif_id") REFERENCES "shift"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "client_address" ADD CONSTRAINT "client_address_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "clients"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
