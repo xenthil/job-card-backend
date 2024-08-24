@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./src/index.ts",
+    "dev": "nodemon src/index.ts",
     "build": "tsc --build",
-    "start": "node ./build/index.js",
+    "start": "node src/index.ts",
     "test": "jest",
     "test:e2e": "jest --testPathPattern=src/e2e"
   },
@@ -43,5 +43,9 @@
     "joi": "^17.13.3",
     "multer": "^1.4.5-lts.1",
     "jsonwebtoken": "^9.0.2"
+  }
+  ,
+  "prisma": {
+    "schema": "src/prisma/schema.prisma"
   }
 }
