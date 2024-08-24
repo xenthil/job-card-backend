@@ -23,10 +23,16 @@ export function createApp() {
   global.__uploadDir = __dirname + "/uploads";
   global.__srcDir = __dirname;
   
-  let CLIENT_URL = ["http://localhost:3000","http://job-card-zaara.s3-website.ap-south-1.amazonaws.com"]
+  let CLIENT_URLS = ["http://localhost:3000","http://job-card-zaara.s3-website.ap-south-1.amazonaws.com"]
   app.use(cookieParser());
   app.use(cors({
-    origin: CLIENT_URL,
+    origin: (origin, callback) => {
+      if (CLIENT_URLS.includes(origin!) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   }));
   app.use(express.urlencoded({ extended: false }));
