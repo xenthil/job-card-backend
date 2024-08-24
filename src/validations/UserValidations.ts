@@ -21,6 +21,12 @@ export const userValidations = (inputs:any)=>{
             'string.max': 'Password can be at most {#limit} characters long',
             'any.required': 'Password is required'
         }),
+        role: Joi.string().allow(null,"").messages({
+            'string.base': 'role must be a string',
+        }),
+        shiftId: Joi.string().allow(null,"").messages({
+            'string.base': 'Shift id must be a string',
+        }),
     });
     const  { error, value } = userSchema.validate(inputs,{ abortEarly: false });
     let errMsg:string[] = [];

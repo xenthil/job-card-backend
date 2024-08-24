@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import { 
-  createJoType as createJoTypeService, 
-  fetchJoTypes as fetchJoTypesService, 
-  updateJoType as updateJoTypeService, 
-  removeJoType as removeJoTypeService 
-} from '../services/JoTypeService';
+  createJobType as createJoTypeService, 
+  fetchJobTypes as fetchJoTypesService, 
+  updateJobType as updateJoTypeService, 
+  removeJobType as removeJoTypeService 
+} from '../services/JobTypeService';
 import { sendResponse } from '../utils/handleResponse';
 import { STATUS_CODE, RESPONSE_MESSAGE } from "../utils/constants/ResponseStatus";
 
 // Controller for creating JoType
-export const addJoType = async (request: Request, response: Response): Promise<Response> => {
+export const addJobType = async (request: Request, response: Response): Promise<Response> => {
   try {
     const inputs = request.body;
     const data = await createJoTypeService(inputs);
@@ -24,7 +24,7 @@ export const addJoType = async (request: Request, response: Response): Promise<R
 };
 
 // Controller for fetching JoTypes
-export const getJoTypes = async (request: Request, response: Response): Promise<Response> => {
+export const getJobTypes = async (request: Request, response: Response): Promise<Response> => {
   try {
     const query = request.query;
     const data = await fetchJoTypesService(query);
@@ -38,7 +38,7 @@ export const getJoTypes = async (request: Request, response: Response): Promise<
 };
 
 // Controller for updating JoType
-export const updateJoType = async (request: Request, response: Response): Promise<Response> => {
+export const updateJobType = async (request: Request, response: Response): Promise<Response> => {
   try {
     const { id } = request.params;
     const inputs = request.body;
@@ -53,7 +53,7 @@ export const updateJoType = async (request: Request, response: Response): Promis
 };
 
 // Controller for removing JoType
-export const removeJoType = async (request: Request, response: Response): Promise<Response> => {
+export const removeJobType = async (request: Request, response: Response): Promise<Response> => {
   try {
     const { id } = request.params;
     await removeJoTypeService(parseInt(id));

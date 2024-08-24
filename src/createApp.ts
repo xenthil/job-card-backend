@@ -6,7 +6,7 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 
-import JoTypeRouter from "./routes/JoTypeRouter";
+import JobTypeRouter from "./routes/jobType";
 import Unit from "./routes/Unit";
 import AuthRoute from "./routes/Auth";
 import ClientRoute from "./routes/Client";
@@ -23,11 +23,15 @@ export function createApp() {
   global.__uploadDir = __dirname + "/uploads";
   global.__srcDir = __dirname;
   
-  app.use(cors());
+  let CLIENT_URL = "http://localhost:3000"
+  app.use(cookieParser());
+  app.use(cors({
+    origin: CLIENT_URL,
+    credentials: true,
+  }));
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
   app.use(compression());
-  app.use(cookieParser());
   app.use(express.static(__uploadDir + "/materialInward"));
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -36,7 +40,7 @@ export function createApp() {
   app.use("/api/client", ClientRoute);
   app.use("/api/unit", Unit);
   app.use("/api/materials", material);
-  app.use("/api/JoTypeRouter", JoTypeRouter);
+  app.use("/api/jobType", JobTypeRouter);
   app.use("/api/common", commonRoute);
   app.use("/api/materialInward", materialInwardRoute);
 

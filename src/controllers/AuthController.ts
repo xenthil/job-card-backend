@@ -3,6 +3,7 @@ import { auth, saveUser } from '../services/AuthService'
 import { sendResponse } from '../utils/handleResponse'
 import { userValidations, loginValidations } from "../validations/UserValidations"
 import { STATUS_CODE, RESPONSE_MESSAGE } from "../utils/constants/ResponseStatus"
+import jwt from 'jsonwebtoken';
 
 const login = async(request:Request, response:Response)=>{
     try{
@@ -47,4 +48,34 @@ const register = async(request:Request, response:Response)=>{
     }
 }
 
-export { login, register }
+const verifyToken = async(request:Request, response:Response)=>{
+    try{
+        const token = request.cookies.token; 
+        const SECRET = process.env.SECRET_KEY || "job_secret"
+        jwt.verify(token, SECRET, (err:any, decoded:any) => {
+            if (err) {
+              if (err.name === 'TokenExpiredError') {
+                return response.status(401).json({ message: 'Token expired' });
+              }
+              return response.status(401).json({ message: 'Failed to authenticate token' });
+            }
+            let data = {
+                user_id : decoded.id,
+                role:decoded.role,
+                firstName :decoded.firstName,
+                lastName :decoded.lastName,
+                email :decoded.email,
+            }
+            return response.status(200).json({status : 200,message : "Token is valid",data});
+          });
+    }catch(e){
+        return sendResponse(request,response,{
+            status : STATUS_CODE.SERVER_ERROR_CODE,
+            message : RESPONSE_MESSAGE.INTERNAL_ERROR
+        });
+    }
+}
+
+
+
+export { login, register,verifyToken }

@@ -7,6 +7,7 @@ CREATE TABLE "users" (
     "password" TEXT NOT NULL,
     "status" BOOLEAN,
     "token" TEXT,
+    "role" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -59,7 +60,7 @@ CREATE TABLE "material_inward" (
     "is_qty_approved" INTEGER,
     "rejection_reason" TEXT,
     "job_id" TEXT,
-    "job_type" TEXT,
+    "job_type_id" INTEGER NOT NULL,
     "job_status" TEXT,
     "status" BOOLEAN,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -82,13 +83,21 @@ CREATE TABLE "material_inward_details" (
 CREATE TABLE "material_production" (
     "id" SERIAL NOT NULL,
     "material_inward_id" INTEGER NOT NULL,
-    "received_qty" INTEGER NOT NULL,
-    "assigned_type" TEXT NOT NULL,
+    "received_qty" INTEGER,
     "balance_qty" INTEGER,
-    "completed_qty" INTEGER NOT NULL,
+    "completed_qty" INTEGER,
     "assigned_floor" TEXT,
-    "assigned_shift" TEXT NOT NULL,
-    "manager" TEXT,
+    "assigned_shift" TEXT,
+    "date" TEXT,
+    "shift_incharge" INTEGER NOT NULL,
+    "remarks" TEXT,
+    "required_coating" TEXT,
+    "achived_coating" TEXT,
+    "zinc_starting_level" TEXT,
+    "zinc_ending_level" TEXT,
+    "status" BOOLEAN,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "material_production_pkey" PRIMARY KEY ("id")
 );
@@ -97,40 +106,53 @@ CREATE TABLE "material_production" (
 CREATE TABLE "material_filing" (
     "id" SERIAL NOT NULL,
     "material_inward_id" INTEGER NOT NULL,
-    "received_qty" INTEGER NOT NULL,
-    "assigned_type" TEXT NOT NULL,
+    "received_qty" INTEGER,
     "balance_qty" INTEGER,
-    "completed_qty" INTEGER NOT NULL,
+    "completed_qty" INTEGER,
     "assigned_floor" TEXT,
-    "assigned_shift" TEXT NOT NULL,
-    "manager" TEXT,
+    "assigned_shift" TEXT,
+    "date" TEXT,
+    "shift_incharge" INTEGER NOT NULL,
+    "remarks" TEXT,
+    "contractor" TEXT,
+    "status" BOOLEAN,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "material_filing_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "material_dispatch" (
+CREATE TABLE "floor" (
     "id" SERIAL NOT NULL,
-    "material_inward_id" INTEGER NOT NULL,
-    "received_qty" INTEGER NOT NULL,
-    "assigned_type" TEXT NOT NULL,
-    "balance_qty" INTEGER,
-    "completed_qty" INTEGER NOT NULL,
-    "assigned_floor" TEXT,
-    "assigned_shift" TEXT NOT NULL,
-    "manager" TEXT,
+    "name" TEXT NOT NULL,
+    "status" BOOLEAN,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "material_dispatch_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "floor_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "expected_material_expenses" (
+CREATE TABLE "shift" (
     "id" SERIAL NOT NULL,
-    "material_inward_id" INTEGER NOT NULL,
-    "material_id" INTEGER NOT NULL,
-    "qty" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "status" BOOLEAN,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "expected_material_expenses_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "shift_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "job_types" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "status" BOOLEAN,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "job_types_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -158,42 +180,6 @@ CREATE TABLE "material" (
     CONSTRAINT "material_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "job_type" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "status" BOOLEAN,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "job_type_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "inventory_details" (
-    "id" SERIAL NOT NULL,
-    "material_id" INTEGER NOT NULL,
-    "qty" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "inventory_details_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "purchase_details" (
-    "id" SERIAL NOT NULL,
-    "material_id" INTEGER NOT NULL,
-    "client_id" INTEGER NOT NULL,
-    "qty" INTEGER NOT NULL,
-    "order_date" TIMESTAMP(3) NOT NULL,
-    "received_date" TIMESTAMP(3) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "purchase_details_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -204,31 +190,22 @@ ALTER TABLE "client_address" ADD CONSTRAINT "client_address_client_id_fkey" FORE
 ALTER TABLE "material_inward" ADD CONSTRAINT "material_inward_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "clients"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "material_inward" ADD CONSTRAINT "material_inward_job_type_id_fkey" FOREIGN KEY ("job_type_id") REFERENCES "job_types"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "material_inward_details" ADD CONSTRAINT "material_inward_details_material_inward_id_fkey" FOREIGN KEY ("material_inward_id") REFERENCES "material_inward"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "material_production" ADD CONSTRAINT "material_production_material_inward_id_fkey" FOREIGN KEY ("material_inward_id") REFERENCES "material_inward"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "material_production" ADD CONSTRAINT "material_production_shift_incharge_fkey" FOREIGN KEY ("shift_incharge") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "material_filing" ADD CONSTRAINT "material_filing_material_inward_id_fkey" FOREIGN KEY ("material_inward_id") REFERENCES "material_inward"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "material_dispatch" ADD CONSTRAINT "material_dispatch_material_inward_id_fkey" FOREIGN KEY ("material_inward_id") REFERENCES "material_inward"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "expected_material_expenses" ADD CONSTRAINT "expected_material_expenses_material_inward_id_fkey" FOREIGN KEY ("material_inward_id") REFERENCES "material_inward"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "expected_material_expenses" ADD CONSTRAINT "expected_material_expenses_material_id_fkey" FOREIGN KEY ("material_id") REFERENCES "material"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "material_filing" ADD CONSTRAINT "material_filing_shift_incharge_fkey" FOREIGN KEY ("shift_incharge") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "material" ADD CONSTRAINT "material_unit_id_fkey" FOREIGN KEY ("unit_id") REFERENCES "units"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "inventory_details" ADD CONSTRAINT "inventory_details_material_id_fkey" FOREIGN KEY ("material_id") REFERENCES "material"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "purchase_details" ADD CONSTRAINT "purchase_details_material_id_fkey" FOREIGN KEY ("material_id") REFERENCES "material"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "purchase_details" ADD CONSTRAINT "purchase_details_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "clients"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

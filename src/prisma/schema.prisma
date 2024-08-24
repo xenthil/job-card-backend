@@ -15,6 +15,11 @@ model User {
   password String
   status Boolean?
   token String?
+  role String?
+  materialProduction MaterialProduction[]
+  materialFiling MaterialFiling[]
+  shiftId Int @map("shif_id")
+  shift Shift @relation(fields: [shiftId],references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -27,7 +32,6 @@ model Client {
   status Boolean?
   address ClientAddress[]
   MaterialInward MaterialInward[]
-  purchaseDetails PurchaseDetails[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -60,7 +64,7 @@ model MaterialInward {
   client Client @relation(fields: [clientId],references: [id])
   quantity Int
   noOfMaterials Int @map("no_of_materials") 
-  dcNumber Int @map("dc_number") 
+  dcNumber String? @map("dc_number") 
   dcImage String? @map("dc_image")
   receivedDate DateTime @map("received_date")
   estimatedDispatchDate DateTime @map("estimated_dispatch_date")
@@ -69,14 +73,13 @@ model MaterialInward {
   isQtyApproved Int? @map("is_qty_approved")
   rejectionReason String? @map("rejection_reason")
   jobId String? @map("job_id")
-  jobType String? @map("job_type")
+  jobTypeId Int @map("job_type_id")
+  jobType JobType @relation(fields: [jobTypeId],references: [id])
   jobStatus String? @map("job_status")
   status Boolean?
-  expectedMaterialExpenses ExpectedMaterialExpenses[]
   materialInwardDetails MaterialInwardDetails[]
   materialProduction MaterialProduction[]
   materialFiling MaterialFiling[]
-  materialDispatch MaterialDispatch[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -98,14 +101,23 @@ model MaterialProduction{
   id Int @id @default(autoincrement())
   materialInwardId Int @map("material_inward_id")
   materialInward MaterialInward @relation(fields: [materialInwardId],references: [id])
-  receivedQty Int @map("received_qty")
-  assignedType String @map("assigned_type")
+  receivedQty Int? @map("received_qty")
   balanceQty Int? @map("balance_qty")
-  completedQty Int @map("completed_qty")
+  completedQty Int? @map("completed_qty")
   assignedFloor String? @map("assigned_floor")
-  assignedShift String @map("assigned_shift")
-  manager String?
-    
+  assignedShift String? @map("assigned_shift")
+  date String?
+  shiftIncharge Int @map("shift_incharge")
+  user User @relation(fields: [shiftIncharge],references: [id])
+  remarks String?
+  requiredCoating String? @map("required_coating")
+  achivedCoating String? @map("achived_coating")
+  zincStartingLevel String? @map("zinc_starting_level")
+  zincEndingLevel String? @map("zinc_ending_level")
+  status Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("material_production")
 }
 
@@ -113,42 +125,54 @@ model MaterialFiling{
   id Int @id @default(autoincrement())
   materialInwardId Int @map("material_inward_id")
   materialInward MaterialInward @relation(fields: [materialInwardId],references: [id])
-  receivedQty Int @map("received_qty")
-  assignedType String @map("assigned_type")
+  receivedQty Int? @map("received_qty")
   balanceQty Int? @map("balance_qty")
-  completedQty Int @map("completed_qty")
+  completedQty Int? @map("completed_qty")
   assignedFloor String? @map("assigned_floor")
-  assignedShift String @map("assigned_shift")
-  manager String?
+  assignedShift String? @map("assigned_shift")
+  date String?
+  shiftIncharge Int @map("shift_incharge")
+  user User @relation(fields: [shiftIncharge],references: [id])
+  remarks String?
+  contractor String?
+  status Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
     
   @@map("material_filing")
 }
 
-model MaterialDispatch{
+model Floor{
   id Int @id @default(autoincrement())
-  materialInwardId Int @map("material_inward_id")
-  materialInward MaterialInward @relation(fields: [materialInwardId],references: [id])
-  receivedQty Int @map("received_qty")
-  assignedType String @map("assigned_type")
-  balanceQty Int? @map("balance_qty")
-  completedQty Int @map("completed_qty")
-  assignedFloor String? @map("assigned_floor")
-  assignedShift String @map("assigned_shift")
-  manager String?
-    
-  @@map("material_dispatch")
+  name String
+  status Boolean?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("floor")
 }
 
-model ExpectedMaterialExpenses{
+model Shift{
   id Int @id @default(autoincrement())
-  materialInwardId Int @map("material_inward_id")
-  materialInward MaterialInward? @relation(fields: [materialInwardId],references: [id])
-  materialId Int @map("material_id")
-  material Material? @relation(fields: [materialId],references: [id])
-  qty Int
+  name String
+  status Boolean?
+  user User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@map("expected_material_expenses")
-} 
+  @@map("shift")
+}
+
+model JobType{
+  id Int @id @default(autoincrement())
+  name String
+  status Boolean?
+  materialInward MaterialInward[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("job_types")
+}
 
 model Unit{
   id Int @id @default(autoincrement())
@@ -169,50 +193,16 @@ model Material{
   type String?
   color String?
   status Boolean?
-  expectedMaterialExpenses ExpectedMaterialExpenses[]
-  inventoryDetails InventoryDetails[]
-  purchaseDetails PurchaseDetails[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("material")
 }
 
-model JoType{
-  id Int @id @default(autoincrement())
-  name String
-  status Boolean?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  @@map("job_type")
-}
 
-model InventoryDetails{
-  id Int @id @default(autoincrement())
-  materialId Int @map("material_id")
-  material Material @relation(fields: [materialId],references: [id])
-  qty Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  @@map("inventory_details")
-}
 
-model PurchaseDetails{
-  id Int @id @default(autoincrement())
-  materialId Int @map("material_id")
-  material Material @relation(fields: [materialId],references: [id])
-  clientId Int @map("client_id")
-  client Client @relation(fields: [clientId],references: [id])
-  qty Int
-  orderDate DateTime @map("order_date")
-  receivedDate DateTime @map("received_date")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("purchase_details")
-}
 
 
 

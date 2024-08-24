@@ -1,5 +1,20 @@
 import { Request, Response, Router } from 'express';
-import { addMaterialInward, getMaterialInward, updateMaterialInward, removeMaterialInward } from '../controllers/MaterialInwardController'
+import { 
+  addMaterialInward, 
+  getMaterialInward, 
+  updateMaterialInward,
+  removeMaterialInward ,
+  getJobs,
+  assignJob,
+  getProduction,
+  assignFiling,
+  forwardJob,
+  getFiling,
+  toDispatch,
+  forwardFiling,
+  getDispatch,
+  getDashboard
+ } from '../controllers/MaterialInwardController'
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -27,6 +42,17 @@ router.post('/add',upload.single('dcImage'),addMaterialInward)
 router.get('/get',getMaterialInward)
 router.post('/edit',upload.single('dcImage'),updateMaterialInward)
 router.post('/remove',removeMaterialInward)
+router.get('/jobs',getJobs)
+router.get('/getProduction',getProduction)
+router.post('/assignJob',assignJob)
+router.post('/assignFiling',assignFiling)
+router.post('/forwardJob',forwardJob)
+router.get('/getFiling',getFiling)
+router.post('/toDispatch',toDispatch)
+router.post('/forwardFiling',forwardFiling)
+router.get('/getDispatch',getDispatch)
+router.get('/getDashboard',getDashboard)
+
 
 
 export default router;

@@ -30,7 +30,14 @@ const auth = async(data:any,response:Response)=>{
         }
 
         let secret_key:string = process.env.SECRET_KEY || 'job_secret'
-        const token = jwt.sign({user_id : user.id.toString()},secret_key,{ expiresIn: '1h' });
+        const token = jwt.sign({
+            user_id : user.id.toString(),
+            role:user.role,
+            firstName :user.firstName,
+            lastName :user.lastName,
+            email :user.email,
+            },
+            secret_key,{ expiresIn: '1h' });
 
         await prisma.user.update({
             where : {
@@ -68,9 +75,11 @@ const saveUser = async(data:any)=>{
     try{
         data.password = await bcrypt.hash(data.password,8);
         data.status =  true;
+        console.log('data',data)
         let user = await prisma.user.create({
             data:{
-                ...data
+                ...data,
+                shiftId : parseInt(data.shiftId)
             }, 
             select : {
                 email :true,
@@ -85,6 +94,7 @@ const saveUser = async(data:any)=>{
         }
         return response
     }catch(errors){
+        console.log('err',errors)
         if (errors instanceof Prisma.PrismaClientKnownRequestError) {
             let error = {
                 status:STATUS_CODE.BAD_REQUEST_CODE,

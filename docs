@@ -75,6 +75,53 @@ Note : in creare query,select option will return specific column (whatever colum
 
 
 
+1) Do relation job status and material Inwards
+2) master for floor and shifts
+
+3) production plan - from Jobs
+
+    materialInward id
+    Assign floor - from master
+    shift - from master 
+    Assign qty 
+    Date 
+    Shift incharge - from user
+    production_status - whenever this status update main table status should update
+    completed_qty
+    required_coating
+    achived_coating
+    zinc_starting_level
+    zinc_ending_level
+    remarks
+   
+   there are 3 option
+   --------------------
+   Assign balance
+   submit
+   send to filing
+
+4) filing
+    production_plan_id
+    shift
+    floor
+    manager
+    recived_qty
+    completed_qty
+    filing_status  - whenever this filed updated production plab should update
+    contractor
+    remarks
+
+
+Note : 1 - production, 2 - filing  , 3- dispatch
+
+
+
+
+
+    
+
+
+
     
 
 
