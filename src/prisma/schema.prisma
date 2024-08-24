@@ -18,7 +18,7 @@ model User {
   role String?
   materialProduction MaterialProduction[]
   materialFiling MaterialFiling[]
-  shiftId Int @map("shif_id")
+  shiftId Int @map("shift_id")
   shift Shift @relation(fields: [shiftId],references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

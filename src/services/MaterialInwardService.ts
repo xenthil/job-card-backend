@@ -212,7 +212,9 @@ const getJobsDetails = async (query: any) => {
       take: limit,
       where: {
         isQtyApproved: 1,
-        jobStatus: "1",
+        jobStatus: {
+          in: ["1", "2"],
+        },
       },
       include: {
         materialInwardDetails: true,
@@ -223,7 +225,9 @@ const getJobsDetails = async (query: any) => {
     const count: number = await prisma.materialInward.count({
       where: {
         isQtyApproved: 1,
-        jobStatus: "1",
+        jobStatus: {
+          in: ["1", "2"],
+        },
       },
     });
     let response = {
@@ -264,7 +268,7 @@ const assignJobDetails = async (data: any) => {
       productionQty += production?.receivedQty;
     });
     let remainQty = totalQty - productionQty;
-    productionQty = productionQty + data.receivedQty;
+    productionQty = productionQty + parseInt(data.receivedQty);
 
     if (totalQty >= productionQty) {
       await prisma.materialProduction.create({
@@ -272,23 +276,21 @@ const assignJobDetails = async (data: any) => {
           ...data,
           receivedQty: parseInt(data.receivedQty),
           shiftIncharge: parseInt(data.shiftIncharge),
-          status : 1
+          status: 1,
         },
         select: {
           id: true,
         },
       });
 
-      if (productionQty == totalQty) {
-        await prisma.materialInward.update({
-          where: {
-            id: data.materialInwardId,
-          },
-          data: {
-            jobStatus: "2",
-          },
-        });
-      }
+      await prisma.materialInward.update({
+        where: {
+          id: data.materialInwardId,
+        },
+        data: {
+          jobStatus: "2",
+        },
+      });
 
       let response = {
         status: STATUS_CODE.CREATED_CODE,
@@ -345,7 +347,7 @@ const getProductionDetails = async (query: any) => {
       skip: (page - 1) * limit,
       take: limit,
       where: {
-        status: {not : 2},
+        status: { not: 2 },
         ...where,
         // materialInward: {
         //   jobStatus: "1"
@@ -363,7 +365,7 @@ const getProductionDetails = async (query: any) => {
 
     const count: number = await prisma.materialProduction.count({
       where: {
-        status: {not : 2},
+        status: { not: 2 },
         ...where,
         // materialInward: {
         //   jobStatus: "1"
@@ -388,7 +390,6 @@ const getProductionDetails = async (query: any) => {
 
 const assignFilingDetails = async (data: any) => {
   try {
-
     let materialInward = await prisma.materialInward.findFirst({
       where: {
         id: data.materialInwardId,
@@ -408,9 +409,8 @@ const assignFilingDetails = async (data: any) => {
     materialProduction?.forEach((production: any) => {
       productionQty += production?.completedQty;
     });
-    
-    
-    productionQty = productionQty + data.completedQty;
+
+    productionQty = productionQty + parseInt(data.completedQty);
 
     let materialProd = await prisma.materialProduction.findFirst({
       where: {
@@ -418,18 +418,19 @@ const assignFilingDetails = async (data: any) => {
       },
     });
 
-    let recQty = materialProd?.receivedQty || 0
-    
-    if (recQty >= data?.completedQty) {
-      let productionStatus:Boolean = false
-      let where:any = {}
-      if(recQty == data.completedQty){
-        productionStatus = true
-        where.status = 2
+    let recQty = materialProd?.receivedQty || 0;
+    let alreadyCompletedQty = materialProd?.completedQty || 0;
+    let completedQty = data?.completedQty ? parseInt(data?.completedQty) : 0;
+    completedQty = alreadyCompletedQty + completedQty;
+
+    if (recQty >= completedQty) {
+      let where: any = {};
+      if (recQty == completedQty) {
+        where.status = 2;
       }
       await prisma.materialProduction.update({
-        where : {
-          id :  parseInt(data.materialProductionId)
+        where: {
+          id: parseInt(data.materialProductionId),
         },
         data: {
           completedQty: parseInt(data.completedQty),
@@ -437,7 +438,7 @@ const assignFilingDetails = async (data: any) => {
           achivedCoating: data.achivedCoating,
           zincStartingLevel: data.zincStartingLevel,
           zincEndingLevel: data.zincEndingLevel,
-          ...where
+          ...where,
         },
         select: {
           id: true,
@@ -446,239 +447,20 @@ const assignFilingDetails = async (data: any) => {
 
       await prisma.materialFiling.create({
         data: {
-          materialInwardId : parseInt(data.materialInwardId),
+          materialInwardId: parseInt(data.materialInwardId),
           receivedQty: parseInt(data.completedQty),
           date: data.date,
           assignedFloor: data.assignedFloor,
           assignedShift: data.assignedShift,
           shiftIncharge: parseInt(data.shiftIncharge),
-          status : 1
+          status: 1,
         },
         select: {
           id: true,
         },
       });
-
-      if(recQty == data.completedQty ){
-        await prisma.materialProduction.update({
-          where: {
-            id: data.materialProductionId,
-          },
-          data : {
-            status : 2
-          }
-        });
-      }
-      
 
       if (productionQty == totalQty) {
-        await prisma.materialInward.update({
-          where: {
-            id: data.materialInwardId,
-          },
-          data: {
-            jobStatus: "2",
-          },
-        });
-      }
-
-      let response = {
-        status: STATUS_CODE.CREATED_CODE,
-        message: "Job has been assigned successfully",
-        data: [],
-      };
-      return response;
-    } else {
-      let response = {
-        status: STATUS_CODE.BAD_REQUEST_CODE,
-        message: RESPONSE_MESSAGE.VALIDATION_ERROR,
-        data: [`Completed Qty is more than received qty`],
-      };
-      return response;
-    }
-  } catch (errors) {
-    console.log("err", errors);
-    let error = {
-      status: STATUS_CODE.SERVER_ERROR_CODE,
-      message: RESPONSE_MESSAGE.INTERNAL_ERROR,
-    };
-    return error;
-  }
-};
-
-const forwardJobDetails = async (data: any) => {
-  try {
-      await prisma.materialProduction.update({
-        where : {
-          id :  parseInt(data.materialProductionId)
-        },
-        data: {
-          status : 2
-        }
-      });
-
-      await prisma.materialProduction.create({
-        data: {
-          materialInwardId : parseInt(data.materialInwardId),
-          receivedQty: parseInt(data.receivedQty),
-          date: data.date,
-          assignedFloor: data.assignedFloor,
-          assignedShift: data.assignedShift,
-          shiftIncharge:parseInt(data.shiftIncharge),
-          status : 1
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      let response = {
-        status: STATUS_CODE.CREATED_CODE,
-        message: "Job has been Forwarded successfully",
-        data: [],
-      };
-      return response;
-    
-  } catch (errors) {
-    console.log("err", errors);
-    let error = {
-      status: STATUS_CODE.SERVER_ERROR_CODE,
-      message: RESPONSE_MESSAGE.INTERNAL_ERROR,
-    };
-    return error;
-  }
-};
-
-
-const getFilingDetails = async (query: any) => {
-  try {
-    const page = query?.page ? parseInt(query?.page) : 1;
-    const limit = query?.limit ? parseInt(query?.limit) : 10;
-    const productionDate = query?.productionDate;
-    const shift = query?.shift;
-    const floor = query?.floor;
-    const incharge = query?.incharge ? parseInt(query?.incharge) : 0;
-
-    let where: any = {};
-
-    if (productionDate) {
-      where.date = productionDate;
-    }
-
-    if (shift) {
-      where.assignedShift = shift;
-    }
-
-    if (floor) {
-      where.assignedFloor = floor;
-    }
-
-    if (incharge) {
-      where.shiftIncharge = incharge;
-    }
-
-    const filing = await prisma.materialFiling.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
-      where: {
-        status: {not : 2},
-        ...where,
-        // materialInward: {
-        //   jobStatus: "2"
-        // }
-      },
-      include: {
-        materialInward: {
-          include: {
-            client: true,
-            jobType: true,
-          },
-        },
-      },
-    });
-
-    const count: number = await prisma.materialFiling.count({
-      where: {
-        status: {not : 2},
-        ...where,
-        // materialInward: {
-        //   jobStatus: "1"
-        // }
-      },
-    });
-    let response = {
-      status: STATUS_CODE.SUCCESS_CODE,
-      message: "Filing has been fetched successfully",
-      data: { filing, count },
-    };
-    return response;
-  } catch (errors) {
-    console.log("err", errors);
-    let error = {
-      status: STATUS_CODE.SERVER_ERROR_CODE,
-      message: RESPONSE_MESSAGE.INTERNAL_ERROR,
-    };
-    return error;
-  }
-};
-
-const toDispatchDetails = async (data: any) => {
-  try {
-
-    let materialInward = await prisma.materialInward.findFirst({
-      where: {
-        id: data.materialInwardId,
-      },
-    });
-
-    let totalQty = materialInward?.quantity || 0;
-
-    let materialFiling = await prisma.materialFiling.findMany({
-      where: {
-        materialInwardId: data.materialInwardId,
-      },
-    });
-
-    let filingQty: number = 0;
-
-    materialFiling?.forEach((production: any) => {
-      filingQty += production?.completedQty;
-    });
-    
-    
-    filingQty = filingQty + data.completedQty;
-
-    let materialFil = await prisma.materialFiling.findFirst({
-      where: {
-        id: data.materialFilingId,
-      },
-    });
-
-    let recQty = materialFil?.receivedQty || 0
-    
-    if (recQty >= data?.completedQty) {
-      let productionStatus:Boolean = false
-      let where:any = {}
-      if(recQty == data.completedQty){
-        productionStatus = true
-        where.status = 2
-      }
-      await prisma.materialFiling.update({
-        where : {
-          id :  parseInt(data.materialFilingId)
-        },
-        data: {
-          completedQty: parseInt(data.completedQty),
-          remarks: data.remarks,
-          ...where
-        },
-        select: {
-          id: true,
-        },
-      });
-
-  
-      if (filingQty == totalQty) {
         await prisma.materialInward.update({
           where: {
             id: data.materialInwardId,
@@ -713,26 +495,263 @@ const toDispatchDetails = async (data: any) => {
   }
 };
 
-const forwardFilingDetails = async (data: any) => {
+const forwardJobDetails = async (data: any) => {
   try {
-      await prisma.materialFiling.update({
-        where : {
-          id :  parseInt(data.materialFilingId)
+    let productionDetails = await prisma.materialProduction.findFirst({
+      where: {
+        id: parseInt(data.materialProductionId),
+      },
+    });
+
+    let receivedQty = productionDetails?.receivedQty || 0;
+    let completedQty = productionDetails?.completedQty || 0;
+
+    let remainQty = receivedQty - completedQty;
+    let forwardQty = parseInt(data.receivedQty);
+
+    if (remainQty >= forwardQty && productionDetails?.status == 1) {
+      await prisma.materialProduction.update({
+        where: {
+          id: parseInt(data.materialProductionId),
         },
         data: {
-          status : 2
-        }
+          status: 2,
+        },
       });
 
-      await prisma.materialFiling.create({
+      await prisma.materialProduction.create({
         data: {
-          materialInwardId : parseInt(data.materialInwardId),
+          materialInwardId: parseInt(data.materialInwardId),
           receivedQty: parseInt(data.receivedQty),
           date: data.date,
           assignedFloor: data.assignedFloor,
           assignedShift: data.assignedShift,
-          shiftIncharge:parseInt(data.shiftIncharge),
-          status : 1
+          shiftIncharge: parseInt(data.shiftIncharge),
+          status: 1,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      let response = {
+        status: STATUS_CODE.CREATED_CODE,
+        message: "Job has been Forwarded successfully",
+        data: [],
+      };
+      return response;
+    } else {
+      let response = {
+        status: STATUS_CODE.BAD_REQUEST_CODE,
+        message: RESPONSE_MESSAGE.VALIDATION_ERROR,
+        data: [`Forward Qty is more than received qty`],
+      };
+      return response;
+    }
+  } catch (errors) {
+    console.log("err", errors);
+    let error = {
+      status: STATUS_CODE.SERVER_ERROR_CODE,
+      message: RESPONSE_MESSAGE.INTERNAL_ERROR,
+    };
+    return error;
+  }
+};
+
+const getFilingDetails = async (query: any) => {
+  try {
+    const page = query?.page ? parseInt(query?.page) : 1;
+    const limit = query?.limit ? parseInt(query?.limit) : 10;
+    const productionDate = query?.productionDate;
+    const shift = query?.shift;
+    const floor = query?.floor;
+    const incharge = query?.incharge ? parseInt(query?.incharge) : 0;
+
+    let where: any = {};
+
+    if (productionDate) {
+      where.date = productionDate;
+    }
+
+    if (shift) {
+      where.assignedShift = shift;
+    }
+
+    if (floor) {
+      where.assignedFloor = floor;
+    }
+
+    if (incharge) {
+      where.shiftIncharge = incharge;
+    }
+
+    const filing = await prisma.materialFiling.findMany({
+      skip: (page - 1) * limit,
+      take: limit,
+      where: {
+        status: { not: 2 },
+        ...where,
+        // materialInward: {
+        //   jobStatus: "2"
+        // }
+      },
+      include: {
+        materialInward: {
+          include: {
+            client: true,
+            jobType: true,
+          },
+        },
+      },
+    });
+
+    const count: number = await prisma.materialFiling.count({
+      where: {
+        status: { not: 2 },
+        ...where,
+        // materialInward: {
+        //   jobStatus: "1"
+        // }
+      },
+    });
+    let response = {
+      status: STATUS_CODE.SUCCESS_CODE,
+      message: "Filing has been fetched successfully",
+      data: { filing, count },
+    };
+    return response;
+  } catch (errors) {
+    console.log("err", errors);
+    let error = {
+      status: STATUS_CODE.SERVER_ERROR_CODE,
+      message: RESPONSE_MESSAGE.INTERNAL_ERROR,
+    };
+    return error;
+  }
+};
+
+const toDispatchDetails = async (data: any) => {
+  try {
+    let materialInward = await prisma.materialInward.findFirst({
+      where: {
+        id: data.materialInwardId,
+      },
+    });
+
+    let totalQty = materialInward?.quantity || 0;
+
+    let materialFiling = await prisma.materialFiling.findMany({
+      where: {
+        materialInwardId: data.materialInwardId,
+      },
+    });
+
+    let filingQty: number = 0;
+
+    materialFiling?.forEach((production: any) => {
+      filingQty += production?.completedQty;
+    });
+
+    filingQty = filingQty + parseInt(data.completedQty);
+
+    let materialFil = await prisma.materialFiling.findFirst({
+      where: {
+        id: data.materialFilingId,
+      },
+    });
+
+    let recQty = materialFil?.receivedQty || 0;
+    let alreadyCompletedQty = materialFil?.completedQty || 0;
+    let completedQty = data?.completedQty ? parseInt(data?.completedQty) : 0;
+    completedQty = alreadyCompletedQty + completedQty;
+
+    if (recQty >= completedQty) {
+      let where: any = {};
+      if (recQty == completedQty) {
+        where.status = 2;
+      }
+      await prisma.materialFiling.update({
+        where: {
+          id: parseInt(data.materialFilingId),
+        },
+        data: {
+          completedQty: parseInt(data.completedQty),
+          remarks: data.remarks,
+          ...where,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (filingQty == totalQty) {
+        await prisma.materialInward.update({
+          where: {
+            id: data.materialInwardId,
+          },
+          data: {
+            jobStatus: "4",
+          },
+        });
+      }
+
+      let response = {
+        status: STATUS_CODE.CREATED_CODE,
+        message: "Job has been assigned successfully",
+        data: [],
+      };
+      return response;
+    } else {
+      let response = {
+        status: STATUS_CODE.BAD_REQUEST_CODE,
+        message: RESPONSE_MESSAGE.VALIDATION_ERROR,
+        data: [`Completed Qty is more than received qty`],
+      };
+      return response;
+    }
+  } catch (errors) {
+    console.log("err", errors);
+    let error = {
+      status: STATUS_CODE.SERVER_ERROR_CODE,
+      message: RESPONSE_MESSAGE.INTERNAL_ERROR,
+    };
+    return error;
+  }
+};
+
+const forwardFilingDetails = async (data: any) => {
+  try {
+    let filingDetails = await prisma.materialFiling.findFirst({
+      where: {
+        id: parseInt(data.materialFilingId),
+      },
+    });
+
+    let receivedQty = filingDetails?.receivedQty || 0;
+    let completedQty = filingDetails?.completedQty || 0;
+
+    let remainQty = receivedQty - completedQty;
+    let forwardQty = parseInt(data.receivedQty);
+
+    if (remainQty >= forwardQty && filingDetails?.status == 1) {
+      await prisma.materialFiling.update({
+        where: {
+          id: parseInt(data.materialFilingId),
+        },
+        data: {
+          status: 2,
+        },
+      });
+
+      await prisma.materialFiling.create({
+        data: {
+          materialInwardId: parseInt(data.materialInwardId),
+          receivedQty: parseInt(data.receivedQty),
+          date: data.date,
+          assignedFloor: data.assignedFloor,
+          assignedShift: data.assignedShift,
+          shiftIncharge: parseInt(data.shiftIncharge),
+          status: 1,
         },
         select: {
           id: true,
@@ -745,7 +764,14 @@ const forwardFilingDetails = async (data: any) => {
         data: [],
       };
       return response;
-    
+    } else {
+      let response = {
+        status: STATUS_CODE.BAD_REQUEST_CODE,
+        message: RESPONSE_MESSAGE.VALIDATION_ERROR,
+        data: [`Forward Qty is more than received qty`],
+      };
+      return response;
+    }
   } catch (errors) {
     console.log("err", errors);
     let error = {
@@ -766,7 +792,7 @@ const getDispatchDetails = async (query: any) => {
       take: limit,
       where: {
         isQtyApproved: 1,
-        jobStatus: "3",
+        jobStatus: "4",
       },
       include: {
         materialInwardDetails: true,
@@ -777,7 +803,7 @@ const getDispatchDetails = async (query: any) => {
     const count: number = await prisma.materialInward.count({
       where: {
         isQtyApproved: 1,
-        jobStatus: "1",
+        jobStatus: "4",
       },
     });
     let response = {
@@ -798,7 +824,6 @@ const getDispatchDetails = async (query: any) => {
 
 const getDashboardDetails = async (query: any) => {
   try {
-    
     const jobCount: number = await prisma.materialInward.count({
       where: {
         isQtyApproved: 1,
@@ -809,7 +834,7 @@ const getDashboardDetails = async (query: any) => {
       where: {
         isQtyApproved: 1,
         jobStatus: {
-          in : ["1","2"]
+          in: ["1", "2", "3"],
         },
       },
     });
@@ -817,26 +842,31 @@ const getDashboardDetails = async (query: any) => {
     const totals = await prisma.materialInward.aggregate({
       _sum: {
         quantity: true,
-        noOfMaterials: true, 
+        noOfMaterials: true,
       },
       where: {
-        isQtyApproved: 1, 
+        isQtyApproved: 1,
         jobStatus: {
-          in : ["1","2"]
+          in: ["1", "2", "3"],
         },
       },
     });
-    
+
     const totalQuantity = totals._sum.quantity;
     const noOfMaterials = totals._sum.noOfMaterials;
-    
 
     const clientCount: number = await prisma.client.count();
 
     let response = {
       status: STATUS_CODE.SUCCESS_CODE,
       message: "Dashboard details has been fetched successfully",
-      data: { jobCount , pendingJobCount , clientCount, totalQuantity, noOfMaterials },
+      data: {
+        jobCount,
+        pendingJobCount,
+        clientCount,
+        totalQuantity,
+        noOfMaterials,
+      },
     };
     return response;
   } catch (errors) {
@@ -848,10 +878,6 @@ const getDashboardDetails = async (query: any) => {
     return error;
   }
 };
-
-
-
-
 
 export {
   create,
@@ -867,5 +893,5 @@ export {
   toDispatchDetails,
   forwardFilingDetails,
   getDispatchDetails,
-  getDashboardDetails
+  getDashboardDetails,
 };

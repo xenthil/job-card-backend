@@ -15,7 +15,8 @@ const auth = async(data:any,response:Response)=>{
         if(!user){
             let res = {
                 status : STATUS_CODE.UNAUTHORIZED_CODE,
-                message : "Email does not exist"
+                message : "Email does not exist",
+                data : ["Email does not exist"]
             }
             return res
         }
@@ -24,7 +25,8 @@ const auth = async(data:any,response:Response)=>{
         if(!match){
             let res = {
                 status : STATUS_CODE.UNAUTHORIZED_CODE,
-                message : "Password is incorrect"
+                message : "Password is incorrect",
+                data : ["Password is incorrect"]
             }
             return res
         }
@@ -75,11 +77,14 @@ const saveUser = async(data:any)=>{
     try{
         data.password = await bcrypt.hash(data.password,8);
         data.status =  true;
-        console.log('data',data)
+        let shiftId = data?.shiftId ? parseInt(data?.shiftId) : 1 ;
+        let role = data?.role ? data?.role : "1" ;
+
         let user = await prisma.user.create({
             data:{
                 ...data,
-                shiftId : parseInt(data.shiftId)
+                shiftId,
+                role
             }, 
             select : {
                 email :true,
