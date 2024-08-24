@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const CommonController_1 = require("../controllers/CommonController");
+const route = (0, express_1.Router)();
+route.get("/get-job-type", CommonController_1.getJobType);
+route.post("/shift/add", CommonController_1.addShift);
+route.get("/shift/get", CommonController_1.getShift);
+route.put("/shift/update", CommonController_1.updateShift);
+route.post("/shift/remove", CommonController_1.removeShift);
+route.post("/floor/add", CommonController_1.addFloor);
+route.get("/floor/get", CommonController_1.getFloor);
+route.put("/floor/update", CommonController_1.updateFloor);
+route.post("/floor/remove", CommonController_1.removeFloor);
+route.get("/getIncharge", CommonController_1.getIncharge);
+route.get("/getAllFloor", CommonController_1.getAllFloor);
+route.get("/getAllShift", CommonController_1.getAllShift);
+exports.default = route;

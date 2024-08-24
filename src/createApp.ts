@@ -23,7 +23,7 @@ export function createApp() {
   global.__uploadDir = __dirname + "/uploads";
   global.__srcDir = __dirname;
   
-  let CLIENT_URL = "http://localhost:3000"
+  let CLIENT_URL = ["http://localhost:3000","http://job-card-zaara.s3-website.ap-south-1.amazonaws.com"]
   app.use(cookieParser());
   app.use(cors({
     origin: CLIENT_URL,

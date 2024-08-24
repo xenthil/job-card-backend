@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "build": "tsc --build",
-    "start": "node src/index.ts",
+    "start": "node build/index.js",
     "test": "jest",
     "test:e2e": "jest --testPathPattern=src/e2e"
   },
