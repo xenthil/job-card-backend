@@ -53,7 +53,8 @@ const auth = async(data:any,response:Response)=>{
         response.cookie('token', token, { 
             maxAge: 24 * 60 * 60 * 1000, 
             httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production' 
+            secure: false, 
+            sameSite : 'lax' 
         });
 
         let res = {
