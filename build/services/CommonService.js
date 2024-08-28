@@ -282,7 +282,7 @@ const getInchargeDetails = (query) => __awaiter(void 0, void 0, void 0, function
             where.shiftId = parseInt(shift);
         }
         const incharge = yield lib_1.prisma.user.findMany({
-            where: Object.assign({ role: {
+            where: Object.assign({ roleId: {
                     in: [2, 3]
                 } }, where),
         });

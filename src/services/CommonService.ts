@@ -262,7 +262,7 @@ const getInchargeDetails = async (query: any) => {
     }
     const incharge = await prisma.user.findMany({
       where: {
-        role: {
+        roleId: {
           in : [2,3]
         },
         ...where,
