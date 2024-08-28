@@ -19,10 +19,10 @@ model User {
   roleId Role @relation(fields: [role],references: [id])
   materialProduction MaterialProduction[]
   materialFiling MaterialFiling[]
-  shiftId Int? @map("shift_id")
-  shift Shift? @relation(fields: [shiftId],references: [id])
-  floorId Int? @map("floor_id")
-  floor Floor? @relation(fields: [floorId],references: [id])
+  shiftId Int @map("shift_id")
+  shift Shift @relation(fields: [shiftId],references: [id])
+  floorId Int @map("floor_id")
+  floor Floor @relation(fields: [floorId],references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
