@@ -73,7 +73,8 @@ const saveUser = async(data:any)=>{
     try{
         data.password = await bcrypt.hash(data.password,8);
         data.status =  true;
-        // let shiftId = data?.shiftId ? parseInt(data?.shiftId) : 1 ;
+        data.shiftId = data?.shiftId ? parseInt(data?.shiftId) : 1 ;
+        data.floorId = data?.floorId ? parseInt(data?.floorId) : 1 ;
         let role = data?.role ? parseInt(data?.role) : 1 ;
 
         let user = await prisma.user.create({

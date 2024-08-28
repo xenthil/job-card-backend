@@ -32,6 +32,9 @@ const userValidations = (inputs) => {
         shiftId: joi_1.default.string().allow(null, "").messages({
             'string.base': 'Shift id must be a string',
         }),
+        floorId: joi_1.default.string().allow(null, "").messages({
+            'string.base': 'Shift id must be a string',
+        }),
     });
     const { error, value } = userSchema.validate(inputs, { abortEarly: false });
     let errMsg = [];
