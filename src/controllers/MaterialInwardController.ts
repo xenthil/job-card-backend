@@ -13,7 +13,9 @@ import {
     toDispatchDetails,
     forwardFilingDetails,
     getDispatchDetails,
-    getDashboardDetails
+    getDashboardDetails,
+    getCeaningDetails,
+    updateCeaningDetails
  } from '../services/MaterialInwardService'
 import { sendResponse } from '../utils/handleResponse'
 import { STATUS_CODE, RESPONSE_MESSAGE } from "../utils/constants/ResponseStatus"
@@ -203,6 +205,32 @@ const getDashboard = async (request:Request,response:Response) =>{
     }
 }
 
+const getCeaningData = async (request:Request,response:Response) =>{
+    try{
+        let inputs = request.query;
+        let data = await getCeaningDetails(inputs);
+        return sendResponse(request,response,data);
+    }catch(e){
+        return sendResponse(request,response,{
+            status : STATUS_CODE.SERVER_ERROR_CODE,
+            message : RESPONSE_MESSAGE.INTERNAL_ERROR
+        });
+    }
+}
+
+const updateCeaning = async (request:Request,response:Response) =>{
+    try{
+        let inputs = request.body;
+        let data = await updateCeaningDetails(inputs);
+        return sendResponse(request,response,data);
+    }catch(e){
+        return sendResponse(request,response,{
+            status : STATUS_CODE.SERVER_ERROR_CODE,
+            message : RESPONSE_MESSAGE.INTERNAL_ERROR
+        });
+    }
+}
+
 export { 
     addMaterialInward, 
     getMaterialInward,
@@ -216,5 +244,7 @@ export {
     toDispatch,
     forwardFiling,
     getDispatch,
-    getDashboard
+    getDashboard,
+    getCeaningData,
+    updateCeaning
 }

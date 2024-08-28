@@ -3,7 +3,7 @@ import { createMaterial, fetchMaterials, updateMaterial as updateMaterialService
 import { sendResponse } from '../utils/handleResponse';
 import { STATUS_CODE, RESPONSE_MESSAGE } from "../utils/constants/ResponseStatus";
 
-// Controller for creating material
+
 export const addMaterial = async (request: Request, response: Response): Promise<Response> => {
   try {
     const inputs = request.body;
@@ -17,7 +17,7 @@ export const addMaterial = async (request: Request, response: Response): Promise
   }
 };
 
-// Controller for fetching materials
+
 export const getMaterials = async (request: Request, response: Response): Promise<Response> => {
   try {
     const query = request.query;
@@ -31,11 +31,11 @@ export const getMaterials = async (request: Request, response: Response): Promis
   }
 };
 
-// Controller for updating material
+
 export const updateMaterial = async (request: Request, response: Response): Promise<Response> => {
   try {
     const inputs = request.body;
-    const data = await updateMaterialService(inputs); // Use the service function
+    const data = await updateMaterialService(inputs); 
     return sendResponse(request, response, data);
   } catch (e) {
     return sendResponse(request, response, {

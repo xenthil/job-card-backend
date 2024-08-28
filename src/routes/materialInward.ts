@@ -13,7 +13,9 @@ import {
   toDispatch,
   forwardFiling,
   getDispatch,
-  getDashboard
+  getDashboard,
+  getCeaningData,
+  updateCeaning
  } from '../controllers/MaterialInwardController'
 import multer from 'multer';
 import path from 'path';
@@ -52,6 +54,8 @@ router.post('/toDispatch',toDispatch)
 router.post('/forwardFiling',forwardFiling)
 router.get('/getDispatch',getDispatch)
 router.get('/getDashboard',getDashboard)
+router.get('/getCleaning',getCeaningData)
+router.put('/updateCeaning',updateCeaning)
 
 
 

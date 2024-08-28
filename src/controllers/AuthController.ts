@@ -50,24 +50,32 @@ const register = async(request:Request, response:Response)=>{
 
 const verifyToken = async(request:Request, response:Response)=>{
     try{
-        const token = request.cookies.token; 
-        const SECRET = process.env.SECRET_KEY || "job_secret"
-        jwt.verify(token, SECRET, (err:any, decoded:any) => {
-            if (err) {
-              if (err.name === 'TokenExpiredError') {
-                return response.status(401).json({ message: 'Token expired' });
-              }
-              return response.status(401).json({ message: 'Failed to authenticate token' });
-            }
-            let data = {
-                user_id : decoded.id,
-                role:decoded.role,
-                firstName :decoded.firstName,
-                lastName :decoded.lastName,
-                email :decoded.email,
-            }
-            return response.status(200).json({status : 200,message : "Token is valid",data});
-          });
+        const authHeader:any = request.headers.token;
+       
+        if(authHeader){
+            const token = authHeader.split(" ")[1];
+            const SECRET = process.env.SECRET_KEY || "job_secret"
+            jwt.verify(token, SECRET, (err:any, decoded:any) => {
+                if (err) {
+                  if (err.name === 'TokenExpiredError') {
+                    return response.status(401).json({ message: 'Token expired' });
+                  }
+                  return response.status(401).json({ message: 'Failed to authenticate token' });
+                }
+                let data = {
+                    user_id : decoded.id,
+                    role:decoded.role,
+                    firstName :decoded.firstName,
+                    lastName :decoded.lastName,
+                    email :decoded.email,
+                }
+                return response.status(200).json({status : 200,message : "Token is valid",data});
+              });
+            
+        }else{
+            return response.status(401).json({ message: 'Failed to authenticate token' });
+        }
+       
     }catch(e){
         return sendResponse(request,response,{
             status : STATUS_CODE.SERVER_ERROR_CODE,
@@ -75,7 +83,6 @@ const verifyToken = async(request:Request, response:Response)=>{
         });
     }
 }
-
 
 
 export { login, register,verifyToken }

@@ -2,7 +2,7 @@ import { prisma } from '../prisma/lib';
 import { STATUS_CODE, RESPONSE_MESSAGE } from "../utils/constants/ResponseStatus";
 
 interface UnitData {
-    unitId?: number;
+    id?: number;
     unit?: string;
     status?: boolean;
     material?: { materialName: string }[];
@@ -44,10 +44,7 @@ export const fetchUnit = async (query: any) => {
 
         const units = await prisma.unit.findMany({
             skip: (page - 1) * limit,
-            take: limit,
-            include: {
-                Material: true
-            }
+            take: limit
         });
         const count: number = await prisma.unit.count();
         
@@ -67,12 +64,10 @@ export const fetchUnit = async (query: any) => {
 
 export const updateUnit = async (data: UnitData) => {
     try {
-        if (!data.unitId) {
-            throw new Error('Unit ID is required');
-        }
+        
         const unit = await prisma.unit.update({
             where: {
-                id: data.unitId
+                id: data?.id
             },
             data: {
                 unit: data.unit || '',

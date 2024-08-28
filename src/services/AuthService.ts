@@ -50,21 +50,16 @@ const auth = async(data:any,response:Response)=>{
             }
         })
 
-        response.cookie('token', token, { 
-            maxAge: 24 * 60 * 60 * 1000, 
-            httpOnly: true, 
-            secure: false, 
-            sameSite : 'lax' 
-        });
-
         let res = {
             status : STATUS_CODE.SUCCESS_CODE,
             message : "Authenticated successfully",
-            token
+            token,
+            role : user.role
         }
         return res
 
    }catch(e){
+        console.log("e",e)
         let error = {
             status : STATUS_CODE.SERVER_ERROR_CODE,
             message : RESPONSE_MESSAGE.INTERNAL_ERROR
@@ -78,14 +73,17 @@ const saveUser = async(data:any)=>{
     try{
         data.password = await bcrypt.hash(data.password,8);
         data.status =  true;
-        let shiftId = data?.shiftId ? parseInt(data?.shiftId) : 1 ;
-        let role = data?.role ? data?.role : "1" ;
+        // let shiftId = data?.shiftId ? parseInt(data?.shiftId) : 1 ;
+        let role = data?.role ? parseInt(data?.role) : 1 ;
 
         let user = await prisma.user.create({
             data:{
                 ...data,
-                shiftId,
-                role
+                roleId: {
+                    connect: {
+                      id: role,
+                    },
+                }
             }, 
             select : {
                 email :true,

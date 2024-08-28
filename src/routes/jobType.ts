@@ -11,7 +11,7 @@ const router = Router();
 // Define routes
 router.post('/job-types', addJobType);  // Route to create a JoType
 router.get('/job-types', getJobTypes);  // Route to fetch JoTypes
-router.put('/job-types/:id', updateJobType);  // Route to update a JoType
-router.delete('/job-types/:id', removeJobType);  // Route to remove a JoType
+router.put('/job-types', updateJobType);  // Route to update a JoType
+router.delete('/job-types', removeJobType);  // Route to remove a JoType
 
 export default router;

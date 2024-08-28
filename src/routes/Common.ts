@@ -12,6 +12,24 @@ import {
   getIncharge,
   getAllFloor,
   getAllShift,
+  getAllRole,
+  addRole,
+  getRole,
+  updateRole,
+  addUser,
+  getUser,
+  updateUser,
+  removeUser,
+  getAllUnit,
+  getAllMaterial,
+  addJobTypeMaterial,
+  updateJobTypeMaterial,
+  getJobTypeMaterial,
+  addInventory,
+  updateInventory,
+  getInventory,
+  getJobTypeMaterialList,
+  getJobTypeMaterialDataList
 } from "../controllers/CommonController";
 
 const route = Router();
@@ -28,5 +46,24 @@ route.post("/floor/remove", removeFloor);
 route.get("/getIncharge", getIncharge);
 route.get("/getAllFloor", getAllFloor);
 route.get("/getAllShift", getAllShift);
+route.get("/getAllUnit", getAllUnit);
+route.post("/role/add", addRole);
+route.get("/role/get", getRole);
+route.put("/role/update", updateRole);
+route.get("/getAllRole", getAllRole);
+route.post("/user/add", addUser);
+route.get("/user/get", getUser);
+route.put("/user/update", updateUser);
+route.post("/user/remove", removeUser);
+route.get("/getAllMaterial", getAllMaterial);
+route.post("/addJobTypeMaterial", addJobTypeMaterial);
+route.put("/updateJobTypeMaterial", updateJobTypeMaterial);
+route.get("/getJobTypeMaterial", getJobTypeMaterial);
+route.post("/addInventory", addInventory);
+route.put("/updateInventory", updateInventory);
+route.get("/getInventory", getInventory);
+route.get("/getJobTypeMaterialList", getJobTypeMaterialList);
+route.get("/getJobTypeMaterialDataList", getJobTypeMaterialDataList);
+
 
 export default route;

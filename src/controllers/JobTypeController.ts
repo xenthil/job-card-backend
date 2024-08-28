@@ -8,7 +8,7 @@ import {
 import { sendResponse } from '../utils/handleResponse';
 import { STATUS_CODE, RESPONSE_MESSAGE } from "../utils/constants/ResponseStatus";
 
-// Controller for creating JoType
+
 export const addJobType = async (request: Request, response: Response): Promise<Response> => {
   try {
     const inputs = request.body;
@@ -23,7 +23,7 @@ export const addJobType = async (request: Request, response: Response): Promise<
   }
 };
 
-// Controller for fetching JoTypes
+
 export const getJobTypes = async (request: Request, response: Response): Promise<Response> => {
   try {
     const query = request.query;
@@ -37,14 +37,18 @@ export const getJobTypes = async (request: Request, response: Response): Promise
   }
 };
 
-// Controller for updating JoType
+
 export const updateJobType = async (request: Request, response: Response): Promise<Response> => {
   try {
-    const { id } = request.params;
     const inputs = request.body;
-    const data = await updateJoTypeService(parseInt(id), inputs);
-    return sendResponse(request, response, data);
+    const data = await updateJoTypeService(inputs);
+    return sendResponse(request, response, {
+      status: STATUS_CODE.SUCCESS_CODE,
+      message: "Job type updated successfully",
+      data
+    });
   } catch (e) {
+    console.log('err',e)
     return sendResponse(request, response, {
       status: STATUS_CODE.SERVER_ERROR_CODE,
       message: RESPONSE_MESSAGE.INTERNAL_ERROR
@@ -52,7 +56,7 @@ export const updateJobType = async (request: Request, response: Response): Promi
   }
 };
 
-// Controller for removing JoType
+
 export const removeJobType = async (request: Request, response: Response): Promise<Response> => {
   try {
     const { id } = request.params;

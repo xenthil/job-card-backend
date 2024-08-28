@@ -7,10 +7,8 @@ export const createMaterial = async (data: any) => {
     const material = await prisma.material.create({
       data: {
         name: data.name,
-        unitId: data.unitId,
-        type: data.type,
-        color: data.color,
-        status: data.status
+        unitId: parseInt(data.unitId),
+        displayName :data.displayName
       },
     });
     return {
@@ -58,13 +56,11 @@ export const fetchMaterials = async (query: any) => {
 export const updateMaterial = async (data: any) => {
   try {
     const material = await prisma.material.update({
-      where: { id: data.id },
+      where: { id: parseInt(data.id) },
       data: {
         name: data.name,
-        unitId: data.unitId,
-        type: data.type,
-        color: data.color,
-        status: data.status
+        unitId: parseInt(data.unitId),
+        displayName :data.displayName
       },
     });
     return {
