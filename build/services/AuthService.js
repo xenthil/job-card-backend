@@ -45,7 +45,7 @@ const auth = (data, response) => __awaiter(void 0, void 0, void 0, function* () 
         let secret_key = process.env.SECRET_KEY || 'job_secret';
         const token = jsonwebtoken_1.default.sign({
             user_id: user.id.toString(),
-            role: user.role,
+            role: user.roleId,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,

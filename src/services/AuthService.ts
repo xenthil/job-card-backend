@@ -34,7 +34,7 @@ const auth = async(data:any,response:Response)=>{
         let secret_key:string = process.env.SECRET_KEY || 'job_secret'
         const token = jwt.sign({
             user_id : user.id.toString(),
-            role:user.role,
+            role:user.roleId,
             firstName :user.firstName,
             lastName :user.lastName,
             email :user.email,
