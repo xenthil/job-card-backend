@@ -62,7 +62,7 @@ const auth = (data, response) => __awaiter(void 0, void 0, void 0, function* () 
             status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
             message: "Authenticated successfully",
             token,
-            role: user.role
+            role: user.roleId
         };
         return res;
     }

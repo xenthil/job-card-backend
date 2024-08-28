@@ -54,7 +54,7 @@ const auth = async(data:any,response:Response)=>{
             status : STATUS_CODE.SUCCESS_CODE,
             message : "Authenticated successfully",
             token,
-            role : user.role
+            role : user.roleId
         }
         return res
 
