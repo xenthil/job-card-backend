@@ -75,7 +75,7 @@ const saveUser = async(data:any)=>{
         data.status =  true;
         data.shiftId = data?.shiftId ? parseInt(data?.shiftId) : 1 ;
         data.floorId = data?.floorId ? parseInt(data?.floorId) : 1 ;
-        data.role = data?.role ? parseInt(data?.role) : 1 ;
+        data.roleId = data?.role ? parseInt(data?.role) : 1 ;
 
         let user = await prisma.user.create({
             data:{
