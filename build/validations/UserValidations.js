@@ -26,7 +26,7 @@ const userValidations = (inputs) => {
             'string.max': 'Password can be at most {#limit} characters long',
             'any.required': 'Password is required'
         }),
-        role: joi_1.default.string().allow(null, "").messages({
+        roleId: joi_1.default.string().allow(null, "").messages({
             'string.base': 'role must be a string',
         }),
         shiftId: joi_1.default.string().allow(null, "").messages({

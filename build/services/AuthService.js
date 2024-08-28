@@ -82,7 +82,7 @@ const saveUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
         data.status = true;
         data.shiftId = (data === null || data === void 0 ? void 0 : data.shiftId) ? parseInt(data === null || data === void 0 ? void 0 : data.shiftId) : 1;
         data.floorId = (data === null || data === void 0 ? void 0 : data.floorId) ? parseInt(data === null || data === void 0 ? void 0 : data.floorId) : 1;
-        data.role = (data === null || data === void 0 ? void 0 : data.role) ? parseInt(data === null || data === void 0 ? void 0 : data.role) : 1;
+        data.roleId = (data === null || data === void 0 ? void 0 : data.role) ? parseInt(data === null || data === void 0 ? void 0 : data.role) : 1;
         let user = yield lib_1.prisma.user.create({
             data: Object.assign({}, data),
             select: {
