@@ -75,6 +75,7 @@ const verifyToken = (request, response) => __awaiter(void 0, void 0, void 0, fun
                     }
                     return response.status(401).json({ message: 'Failed to authenticate token' });
                 }
+                console.log('decoded', decoded);
                 let data = {
                     user_id: decoded.id,
                     role: decoded.role,
