@@ -13,7 +13,6 @@ exports.removeMaterial = exports.updateMaterial = exports.getMaterials = exports
 const MaterialService_1 = require("../services/MaterialService");
 const handleResponse_1 = require("../utils/handleResponse");
 const ResponseStatus_1 = require("../utils/constants/ResponseStatus");
-// Controller for creating material
 const addMaterial = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const inputs = request.body;
@@ -28,7 +27,6 @@ const addMaterial = (request, response) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.addMaterial = addMaterial;
-// Controller for fetching materials
 const getMaterials = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const query = request.query;
@@ -43,11 +41,10 @@ const getMaterials = (request, response) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getMaterials = getMaterials;
-// Controller for updating material
 const updateMaterial = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const inputs = request.body;
-        const data = yield (0, MaterialService_1.updateMaterial)(inputs); // Use the service function
+        const data = yield (0, MaterialService_1.updateMaterial)(inputs);
         return (0, handleResponse_1.sendResponse)(request, response, data);
     }
     catch (e) {

@@ -48,10 +48,7 @@ const fetchUnit = (query) => __awaiter(void 0, void 0, void 0, function* () {
         const limit = (query === null || query === void 0 ? void 0 : query.limit) ? parseInt(query === null || query === void 0 ? void 0 : query.limit) : 10;
         const units = yield lib_1.prisma.unit.findMany({
             skip: (page - 1) * limit,
-            take: limit,
-            include: {
-                Material: true
-            }
+            take: limit
         });
         const count = yield lib_1.prisma.unit.count();
         return {
@@ -71,12 +68,9 @@ const fetchUnit = (query) => __awaiter(void 0, void 0, void 0, function* () {
 exports.fetchUnit = fetchUnit;
 const updateUnit = (data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        if (!data.unitId) {
-            throw new Error('Unit ID is required');
-        }
         const unit = yield lib_1.prisma.unit.update({
             where: {
-                id: data.unitId
+                id: data === null || data === void 0 ? void 0 : data.id
             },
             data: {
                 unit: data.unit || '',

@@ -10,33 +10,51 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeJobType = exports.updateJobType = exports.fetchJobTypes = exports.createJobType = void 0;
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
-// Service for creating a new JoType
+const lib_1 = require("../prisma/lib");
+const ResponseStatus_1 = require("../utils/constants/ResponseStatus");
 const createJobType = (inputs) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma.jobType.create({
+    return yield lib_1.prisma.jobType.create({
         data: inputs,
     });
 });
 exports.createJobType = createJobType;
-// Service for fetching JoTypes
 const fetchJobTypes = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma.jobType.findMany({
-        where: query,
-    });
+    try {
+        const page = query.page ? parseInt(query.page) : 1;
+        const limit = query.limit ? parseInt(query.limit) : 10;
+        const job = yield lib_1.prisma.jobType.findMany({
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+        const count = yield lib_1.prisma.jobType.count();
+        return {
+            status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
+            message: "Materials fetched successfully",
+            data: { job, count }
+        };
+    }
+    catch (error) {
+        console.error('Error fetching materials:', error);
+        return {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+        };
+    }
 });
 exports.fetchJobTypes = fetchJobTypes;
-// Service for updating a JoType
-const updateJobType = (id, updates) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma.jobType.update({
-        where: { id },
-        data: updates,
+const updateJobType = (inputs) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield lib_1.prisma.jobType.update({
+        where: {
+            id: parseInt(inputs.id)
+        },
+        data: {
+            name: inputs.name
+        },
     });
 });
 exports.updateJobType = updateJobType;
-// Service for removing a JoType
 const removeJobType = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma.jobType.delete({
+    return yield lib_1.prisma.jobType.delete({
         where: { id },
     });
 });

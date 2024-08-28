@@ -12,31 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDashboardDetails = exports.getDispatchDetails = exports.forwardFilingDetails = exports.toDispatchDetails = exports.getFilingDetails = exports.forwardJobDetails = exports.assignFilingDetails = exports.getProductionDetails = exports.assignJobDetails = exports.getJobsDetails = exports.remove = exports.update = exports.get = exports.create = void 0;
+exports.updateCeaningDetails = exports.getCeaningDetails = exports.getDashboardDetails = exports.getDispatchDetails = exports.forwardFilingDetails = exports.toDispatchDetails = exports.getFilingDetails = exports.forwardJobDetails = exports.assignFilingDetails = exports.getProductionDetails = exports.assignJobDetails = exports.getJobsDetails = exports.remove = exports.update = exports.get = exports.create = void 0;
 const lib_1 = require("../prisma/lib");
 const ResponseStatus_1 = require("../utils/constants/ResponseStatus");
 const fs_1 = __importDefault(require("fs"));
 const create = (data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let materialDetails = JSON.parse(data.materialDetails);
-        let materialInwardCount = yield lib_1.prisma.materialInward.count();
-        materialInwardCount = materialInwardCount + 1;
-        let jobId = "JOB000" + materialInwardCount;
+        let materialInwardCount = yield lib_1.prisma.materialInwardDetails.count();
         let materilaInward = yield lib_1.prisma.materialInward.create({
             data: {
                 clientId: parseInt(data.clientId),
-                quantity: parseInt(data.quantity),
-                noOfMaterials: parseInt(data.noOfMaterials),
                 dcNumber: data.dcNumber,
                 dcImage: data.dcImage,
-                receivedDate: new Date(data.receivedDate),
-                estimatedDispatchDate: new Date(data.estimatedDispatchDate),
-                isQtyApproved: parseInt(data.isQtyApproved),
-                coatingRequired: data.coatingRequired,
-                jobTypeId: parseInt(data.jobType),
-                jobStatus: "1",
-                jobId: jobId,
-                inspection: data.inspection,
             },
             select: {
                 id: true,
@@ -45,9 +33,22 @@ const create = (data) => __awaiter(void 0, void 0, void 0, function* () {
         let materialInfoArray = [];
         materialDetails.map((data) => {
             let materialInfo = {};
+            materialInwardCount = materialInwardCount + 1;
+            let jobId = "JOB000" + materialInwardCount;
             materialInfo.materialInwardId = materilaInward.id;
             materialInfo.material = data.material;
             materialInfo.thickness = data.thickness;
+            materialInfo.quantity = parseInt(data.quantity);
+            materialInfo.receivedDate = new Date(data.receivedDate);
+            materialInfo.estimatedDispatchDate = new Date(data.estimatedDispatchDate);
+            materialInfo.type = parseInt(data.type);
+            materialInfo.length = data.length,
+                materialInfo.jobTypeId = parseInt(data.jobTypeId);
+            materialInfo.jobStatus = "1";
+            materialInfo.jobId = jobId;
+            materialInfo.inspection = data.inspection;
+            materialInfo.cleaning = parseInt(data.cleaning);
+            materialInfo.printing = parseInt(data.printing);
             materialInfoArray.push(materialInfo);
         });
         yield lib_1.prisma.materialInwardDetails.createMany({
@@ -100,26 +101,18 @@ const get = (query) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.get = get;
-const update = (data) => __awaiter(void 0, void 0, void 0, function* () {
+const update = (inputs) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let materialDetails = JSON.parse(data.materialDetails);
-        data.dcImage = data.dcImage ? data.dcImage : data.oldDCImage;
-        let materialInward = yield lib_1.prisma.materialInward.update({
+        let materialDetails = JSON.parse(inputs.materialDetails);
+        inputs.dcImage = inputs.dcImage ? inputs.dcImage : inputs.oldDCImage;
+        yield lib_1.prisma.materialInward.update({
             where: {
-                id: parseInt(data.materialInwardId),
+                id: parseInt(inputs.materialInwardId),
             },
             data: {
-                clientId: parseInt(data.clientId),
-                quantity: parseInt(data.quantity),
-                noOfMaterials: parseInt(data.noOfMaterials),
-                dcNumber: data.dcNumber,
-                dcImage: data.dcImage,
-                receivedDate: new Date(data.receivedDate),
-                estimatedDispatchDate: new Date(data.estimatedDispatchDate),
-                isQtyApproved: parseInt(data.isQtyApproved),
-                coatingRequired: data.coatingRequired,
-                jobType: data.jobType,
-                inspection: data.inspection,
+                clientId: parseInt(inputs.clientId),
+                dcNumber: inputs.dcNumber,
+                dcImage: inputs.dcImage,
             },
             select: {
                 id: true,
@@ -127,15 +120,25 @@ const update = (data) => __awaiter(void 0, void 0, void 0, function* () {
         });
         yield lib_1.prisma.materialInwardDetails.deleteMany({
             where: {
-                materialInwardId: parseInt(data.materialInwardId),
+                materialInwardId: parseInt(inputs.materialInwardId),
             },
         });
         let materialInfoArray = [];
         materialDetails.map((data) => {
             let materialInfo = {};
-            materialInfo.materialInwardId = materialInward.id;
+            materialInfo.materialInwardId = parseInt(inputs.materialInwardId);
             materialInfo.material = data.material;
             materialInfo.thickness = data.thickness;
+            materialInfo.quantity = parseInt(data.quantity);
+            materialInfo.receivedDate = new Date(data.receivedDate);
+            materialInfo.estimatedDispatchDate = new Date(data.estimatedDispatchDate);
+            materialInfo.type = parseInt(data.type);
+            materialInfo.length = data.length,
+                materialInfo.jobTypeId = parseInt(data.jobTypeId);
+            materialInfo.jobStatus = "1";
+            materialInfo.inspection = data.inspection;
+            materialInfo.cleaning = parseInt(data.cleaning);
+            materialInfo.printing = parseInt(data.printing);
             materialInfoArray.push(materialInfo);
         });
         yield lib_1.prisma.materialInwardDetails.createMany({
@@ -204,27 +207,34 @@ const getJobsDetails = (query) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const page = (query === null || query === void 0 ? void 0 : query.page) ? parseInt(query === null || query === void 0 ? void 0 : query.page) : 1;
         const limit = (query === null || query === void 0 ? void 0 : query.limit) ? parseInt(query === null || query === void 0 ? void 0 : query.limit) : 10;
-        const jobs = yield lib_1.prisma.materialInward.findMany({
+        const jobs = yield lib_1.prisma.materialInwardDetails.findMany({
             skip: (page - 1) * limit,
             take: limit,
             where: {
-                isQtyApproved: 1,
                 jobStatus: {
                     in: ["1", "2"],
                 },
+                cleaning: {
+                    in: [2, 3]
+                }
             },
             include: {
-                materialInwardDetails: true,
-                client: true,
+                materialInward: {
+                    include: {
+                        client: true,
+                    }
+                },
                 jobType: true,
             },
         });
-        const count = yield lib_1.prisma.materialInward.count({
+        const count = yield lib_1.prisma.materialInwardDetails.count({
             where: {
-                isQtyApproved: 1,
                 jobStatus: {
                     in: ["1", "2"],
                 },
+                cleaning: {
+                    in: [2, 3]
+                }
             },
         });
         let response = {
@@ -246,15 +256,15 @@ const getJobsDetails = (query) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getJobsDetails = getJobsDetails;
 const assignJobDetails = (data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let materialInward = yield lib_1.prisma.materialInward.findFirst({
+        let job = yield lib_1.prisma.materialInwardDetails.findFirst({
             where: {
-                id: data.materialInwardId,
+                id: data.id,
             },
         });
-        let totalQty = (materialInward === null || materialInward === void 0 ? void 0 : materialInward.quantity) || 0;
+        let totalQty = (job === null || job === void 0 ? void 0 : job.quantity) || 0;
         let materialProduction = yield lib_1.prisma.materialProduction.findMany({
             where: {
-                materialInwardId: data.materialInwardId,
+                MaterialInwardDetailsId: data.id,
             },
         });
         let productionQty = 0;
@@ -265,14 +275,35 @@ const assignJobDetails = (data) => __awaiter(void 0, void 0, void 0, function* (
         productionQty = productionQty + parseInt(data.receivedQty);
         if (totalQty >= productionQty) {
             yield lib_1.prisma.materialProduction.create({
-                data: Object.assign(Object.assign({}, data), { receivedQty: parseInt(data.receivedQty), shiftIncharge: parseInt(data.shiftIncharge), status: 1 }),
+                data: {
+                    date: data.date,
+                    MaterialInwardDetailsId: data.id,
+                    assignedShift: parseInt(data.assignedShift),
+                    assignedFloor: parseInt(data.assignedFloor),
+                    receivedQty: parseInt(data.receivedQty),
+                    shiftIncharge: parseInt(data.shiftIncharge),
+                    status: 1,
+                },
                 select: {
                     id: true,
                 },
             });
-            yield lib_1.prisma.materialInward.update({
+            let material = data.jobTypeMaterial;
+            let materialInfo = [];
+            material.forEach((element) => {
+                let materialData = {};
+                materialData.materrialId = parseInt(element.name);
+                materialData.expectedQty = parseInt(element.qty);
+                materialData.materialInwardDetailsId = data.id;
+                materialData.displayName = element.displayName;
+                materialInfo.push(materialData);
+            });
+            yield lib_1.prisma.jobExpenses.createMany({
+                data: materialInfo
+            });
+            yield lib_1.prisma.materialInwardDetails.update({
                 where: {
-                    id: data.materialInwardId,
+                    id: data.id,
                 },
                 data: {
                     jobStatus: "2",
@@ -330,12 +361,19 @@ const getProductionDetails = (query) => __awaiter(void 0, void 0, void 0, functi
             take: limit,
             where: Object.assign({ status: { not: 2 } }, where),
             include: {
-                materialInward: {
+                materialInwardDetails: {
                     include: {
-                        client: true,
                         jobType: true,
+                        materialInward: {
+                            include: {
+                                client: true
+                            }
+                        },
                     },
                 },
+                user: true,
+                shift: true,
+                floor: true
             },
         });
         const count = yield lib_1.prisma.materialProduction.count({
@@ -360,15 +398,15 @@ const getProductionDetails = (query) => __awaiter(void 0, void 0, void 0, functi
 exports.getProductionDetails = getProductionDetails;
 const assignFilingDetails = (data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let materialInward = yield lib_1.prisma.materialInward.findFirst({
+        let job = yield lib_1.prisma.materialInwardDetails.findFirst({
             where: {
-                id: data.materialInwardId,
+                id: data.id,
             },
         });
-        let totalQty = (materialInward === null || materialInward === void 0 ? void 0 : materialInward.quantity) || 0;
+        let totalQty = (job === null || job === void 0 ? void 0 : job.quantity) || 0;
         let materialProduction = yield lib_1.prisma.materialProduction.findMany({
             where: {
-                materialInwardId: data.materialInwardId,
+                MaterialInwardDetailsId: data.id,
             },
         });
         let productionQty = 0;
@@ -394,14 +432,14 @@ const assignFilingDetails = (data) => __awaiter(void 0, void 0, void 0, function
                 where: {
                     id: parseInt(data.materialProductionId),
                 },
-                data: Object.assign({ completedQty: parseInt(data.completedQty), remarks: data.remarks, achivedCoating: data.achivedCoating, zincStartingLevel: data.zincStartingLevel, zincEndingLevel: data.zincEndingLevel }, where),
+                data: Object.assign({ completedQty: parseInt(data.completedQty), remarks: data.remarks }, where),
                 select: {
                     id: true,
                 },
             });
             yield lib_1.prisma.materialFiling.create({
                 data: {
-                    materialInwardId: parseInt(data.materialInwardId),
+                    MaterialInwardDetailsId: parseInt(data.id),
                     receivedQty: parseInt(data.completedQty),
                     date: data.date,
                     assignedFloor: data.assignedFloor,
@@ -413,10 +451,21 @@ const assignFilingDetails = (data) => __awaiter(void 0, void 0, void 0, function
                     id: true,
                 },
             });
-            if (productionQty == totalQty) {
-                yield lib_1.prisma.materialInward.update({
+            data.jobTypeMaterial.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
+                yield lib_1.prisma.jobExpenses.updateMany({
                     where: {
-                        id: data.materialInwardId,
+                        materrialId: parseInt(element === null || element === void 0 ? void 0 : element.name),
+                        materialInwardDetailsId: parseInt(data.id)
+                    },
+                    data: {
+                        usedQty: parseInt(element.qty),
+                    },
+                });
+            }));
+            if (productionQty == totalQty) {
+                yield lib_1.prisma.materialInwardDetails.update({
+                    where: {
+                        id: data.id,
                     },
                     data: {
                         jobStatus: "3",
@@ -471,11 +520,11 @@ const forwardJobDetails = (data) => __awaiter(void 0, void 0, void 0, function* 
             });
             yield lib_1.prisma.materialProduction.create({
                 data: {
-                    materialInwardId: parseInt(data.materialInwardId),
+                    MaterialInwardDetailsId: parseInt(data.materialInwardId),
                     receivedQty: parseInt(data.receivedQty),
                     date: data.date,
-                    assignedFloor: data.assignedFloor,
-                    assignedShift: data.assignedShift,
+                    assignedFloor: parseInt(data.assignedFloor),
+                    assignedShift: parseInt(data.assignedShift),
                     shiftIncharge: parseInt(data.shiftIncharge),
                     status: 1,
                 },
@@ -535,10 +584,14 @@ const getFilingDetails = (query) => __awaiter(void 0, void 0, void 0, function* 
             take: limit,
             where: Object.assign({ status: { not: 2 } }, where),
             include: {
-                materialInward: {
+                materialInwardDetails: {
                     include: {
-                        client: true,
                         jobType: true,
+                        materialInward: {
+                            include: {
+                                client: true
+                            }
+                        },
                     },
                 },
             },
@@ -565,20 +618,20 @@ const getFilingDetails = (query) => __awaiter(void 0, void 0, void 0, function* 
 exports.getFilingDetails = getFilingDetails;
 const toDispatchDetails = (data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let materialInward = yield lib_1.prisma.materialInward.findFirst({
+        let job = yield lib_1.prisma.materialInwardDetails.findFirst({
             where: {
-                id: data.materialInwardId,
+                id: data.id,
             },
         });
-        let totalQty = (materialInward === null || materialInward === void 0 ? void 0 : materialInward.quantity) || 0;
+        let totalQty = (job === null || job === void 0 ? void 0 : job.quantity) || 0;
         let materialFiling = yield lib_1.prisma.materialFiling.findMany({
             where: {
-                materialInwardId: data.materialInwardId,
+                MaterialInwardDetailsId: data.id,
             },
         });
         let filingQty = 0;
-        materialFiling === null || materialFiling === void 0 ? void 0 : materialFiling.forEach((production) => {
-            filingQty += production === null || production === void 0 ? void 0 : production.completedQty;
+        materialFiling === null || materialFiling === void 0 ? void 0 : materialFiling.forEach((filing) => {
+            filingQty += filing === null || filing === void 0 ? void 0 : filing.completedQty;
         });
         filingQty = filingQty + parseInt(data.completedQty);
         let materialFil = yield lib_1.prisma.materialFiling.findFirst({
@@ -599,15 +652,15 @@ const toDispatchDetails = (data) => __awaiter(void 0, void 0, void 0, function* 
                 where: {
                     id: parseInt(data.materialFilingId),
                 },
-                data: Object.assign({ completedQty: parseInt(data.completedQty), remarks: data.remarks }, where),
+                data: Object.assign({ completedQty: parseInt(data.completedQty), remarks: data.remarks, status: 2 }, where),
                 select: {
                     id: true,
                 },
             });
             if (filingQty == totalQty) {
-                yield lib_1.prisma.materialInward.update({
+                yield lib_1.prisma.materialInwardDetails.update({
                     where: {
-                        id: data.materialInwardId,
+                        id: data.id,
                     },
                     data: {
                         jobStatus: "4",
@@ -662,7 +715,7 @@ const forwardFilingDetails = (data) => __awaiter(void 0, void 0, void 0, functio
             });
             yield lib_1.prisma.materialFiling.create({
                 data: {
-                    materialInwardId: parseInt(data.materialInwardId),
+                    MaterialInwardDetailsId: parseInt(data.materialInwardId),
                     receivedQty: parseInt(data.receivedQty),
                     date: data.date,
                     assignedFloor: data.assignedFloor,
@@ -704,22 +757,21 @@ const getDispatchDetails = (query) => __awaiter(void 0, void 0, void 0, function
     try {
         const page = (query === null || query === void 0 ? void 0 : query.page) ? parseInt(query === null || query === void 0 ? void 0 : query.page) : 1;
         const limit = (query === null || query === void 0 ? void 0 : query.limit) ? parseInt(query === null || query === void 0 ? void 0 : query.limit) : 10;
-        const dispatch = yield lib_1.prisma.materialInward.findMany({
+        const dispatch = yield lib_1.prisma.materialInwardDetails.findMany({
             skip: (page - 1) * limit,
             take: limit,
             where: {
-                isQtyApproved: 1,
                 jobStatus: "4",
             },
             include: {
-                materialInwardDetails: true,
-                client: true,
+                materialInward: {
+                    include: { client: true }
+                },
                 jobType: true,
             },
         });
-        const count = yield lib_1.prisma.materialInward.count({
+        const count = yield lib_1.prisma.materialInwardDetails.count({
             where: {
-                isQtyApproved: 1,
                 jobStatus: "4",
             },
         });
@@ -742,33 +794,26 @@ const getDispatchDetails = (query) => __awaiter(void 0, void 0, void 0, function
 exports.getDispatchDetails = getDispatchDetails;
 const getDashboardDetails = (query) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const jobCount = yield lib_1.prisma.materialInward.count({
+        const jobCount = yield lib_1.prisma.materialInwardDetails.count();
+        const pendingJobCount = yield lib_1.prisma.materialInwardDetails.count({
             where: {
-                isQtyApproved: 1,
-            },
-        });
-        const pendingJobCount = yield lib_1.prisma.materialInward.count({
-            where: {
-                isQtyApproved: 1,
                 jobStatus: {
                     in: ["1", "2", "3"],
                 },
             },
         });
-        const totals = yield lib_1.prisma.materialInward.aggregate({
+        const totals = yield lib_1.prisma.materialInwardDetails.aggregate({
             _sum: {
                 quantity: true,
-                noOfMaterials: true,
             },
             where: {
-                isQtyApproved: 1,
                 jobStatus: {
                     in: ["1", "2", "3"],
                 },
             },
         });
         const totalQuantity = totals._sum.quantity;
-        const noOfMaterials = totals._sum.noOfMaterials;
+        const noOfMaterials = 0;
         const clientCount = yield lib_1.prisma.client.count();
         let response = {
             status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
@@ -793,3 +838,71 @@ const getDashboardDetails = (query) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getDashboardDetails = getDashboardDetails;
+const getCeaningDetails = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const page = (query === null || query === void 0 ? void 0 : query.page) ? parseInt(query === null || query === void 0 ? void 0 : query.page) : 1;
+        const limit = (query === null || query === void 0 ? void 0 : query.limit) ? parseInt(query === null || query === void 0 ? void 0 : query.limit) : 10;
+        const cleaning = yield lib_1.prisma.materialInwardDetails.findMany({
+            skip: (page - 1) * limit,
+            take: limit,
+            where: {
+                cleaning: 1,
+            },
+            include: {
+                materialInward: {
+                    include: {
+                        client: true,
+                    }
+                },
+                jobType: true,
+            },
+        });
+        const count = yield lib_1.prisma.materialInwardDetails.count({
+            where: {
+                cleaning: 1,
+            },
+        });
+        let response = {
+            status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
+            message: "Cleaning details has been fetched successfully",
+            data: { cleaning, count },
+        };
+        return response;
+    }
+    catch (errors) {
+        console.log("err", errors);
+        let error = {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        };
+        return error;
+    }
+});
+exports.getCeaningDetails = getCeaningDetails;
+const updateCeaningDetails = (data) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield lib_1.prisma.materialInwardDetails.update({
+            where: {
+                id: data.id
+            },
+            data: {
+                cleaning: 2
+            }
+        });
+        let response = {
+            status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
+            message: "Cleaning details has been updated successfully",
+            data: [],
+        };
+        return response;
+    }
+    catch (e) {
+        console.log("err", e);
+        let error = {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        };
+        return error;
+    }
+});
+exports.updateCeaningDetails = updateCeaningDetails;

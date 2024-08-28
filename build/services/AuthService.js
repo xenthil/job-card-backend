@@ -58,19 +58,16 @@ const auth = (data, response) => __awaiter(void 0, void 0, void 0, function* () 
                 token
             }
         });
-        response.cookie('token', token, {
-            maxAge: 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production'
-        });
         let res = {
             status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
             message: "Authenticated successfully",
-            token
+            token,
+            role: user.role
         };
         return res;
     }
     catch (e) {
+        console.log("e", e);
         let error = {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
             message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
@@ -83,11 +80,14 @@ const saveUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         data.password = yield bcrypt_1.default.hash(data.password, 8);
         data.status = true;
-        let shiftId = (data === null || data === void 0 ? void 0 : data.shiftId) ? parseInt(data === null || data === void 0 ? void 0 : data.shiftId) : 1;
-        let role = (data === null || data === void 0 ? void 0 : data.role) ? data === null || data === void 0 ? void 0 : data.role : "1";
+        // let shiftId = data?.shiftId ? parseInt(data?.shiftId) : 1 ;
+        let role = (data === null || data === void 0 ? void 0 : data.role) ? parseInt(data === null || data === void 0 ? void 0 : data.role) : 1;
         let user = yield lib_1.prisma.user.create({
-            data: Object.assign(Object.assign({}, data), { shiftId,
-                role }),
+            data: Object.assign(Object.assign({}, data), { roleId: {
+                    connect: {
+                        id: role,
+                    },
+                } }),
             select: {
                 email: true,
                 firstName: true,

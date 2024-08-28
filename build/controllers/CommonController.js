@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllShift = exports.getAllFloor = exports.getIncharge = exports.removeFloor = exports.updateFloor = exports.getFloor = exports.addFloor = exports.removeShift = exports.updateShift = exports.getShift = exports.addShift = exports.getJobType = void 0;
+exports.getJobTypeMaterialDataList = exports.getJobTypeMaterialList = exports.getInventory = exports.updateInventory = exports.addInventory = exports.getJobTypeMaterial = exports.updateJobTypeMaterial = exports.addJobTypeMaterial = exports.getAllMaterial = exports.getAllUnit = exports.removeUser = exports.updateUser = exports.getUser = exports.addUser = exports.getAllRole = exports.getRole = exports.updateRole = exports.addRole = exports.getAllShift = exports.getAllFloor = exports.getIncharge = exports.removeFloor = exports.updateFloor = exports.getFloor = exports.addFloor = exports.removeShift = exports.updateShift = exports.getShift = exports.addShift = exports.getJobType = void 0;
 const handleResponse_1 = require("../utils/handleResponse");
 const ResponseStatus_1 = require("../utils/constants/ResponseStatus");
 const CommonService_1 = require("../services/CommonService");
@@ -21,7 +21,7 @@ const getJobType = (request, response) => __awaiter(void 0, void 0, void 0, func
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -35,7 +35,7 @@ const addShift = (request, response) => __awaiter(void 0, void 0, void 0, functi
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -49,7 +49,7 @@ const getShift = (request, response) => __awaiter(void 0, void 0, void 0, functi
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -63,7 +63,7 @@ const updateShift = (request, response) => __awaiter(void 0, void 0, void 0, fun
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -77,7 +77,7 @@ const removeShift = (request, response) => __awaiter(void 0, void 0, void 0, fun
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -91,7 +91,7 @@ const addFloor = (request, response) => __awaiter(void 0, void 0, void 0, functi
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -105,7 +105,7 @@ const getFloor = (request, response) => __awaiter(void 0, void 0, void 0, functi
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -119,7 +119,7 @@ const updateFloor = (request, response) => __awaiter(void 0, void 0, void 0, fun
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -133,7 +133,7 @@ const removeFloor = (request, response) => __awaiter(void 0, void 0, void 0, fun
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -147,7 +147,7 @@ const getIncharge = (request, response) => __awaiter(void 0, void 0, void 0, fun
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -160,7 +160,7 @@ const getAllFloor = (request, response) => __awaiter(void 0, void 0, void 0, fun
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
@@ -173,8 +173,261 @@ const getAllShift = (request, response) => __awaiter(void 0, void 0, void 0, fun
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
-            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
         });
     }
 });
 exports.getAllShift = getAllShift;
+const addRole = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.body;
+        let data = yield (0, CommonService_1.addRoleDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.addRole = addRole;
+const getRole = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.query;
+        let data = yield (0, CommonService_1.getRoleDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.getRole = getRole;
+const getAllRole = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let data = yield (0, CommonService_1.getAllRoleDetails)();
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.getAllRole = getAllRole;
+const updateRole = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.body;
+        let data = yield (0, CommonService_1.updateRoleDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.updateRole = updateRole;
+const addUser = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.body;
+        let data = yield (0, CommonService_1.addUserDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.addUser = addUser;
+const getUser = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.query;
+        let data = yield (0, CommonService_1.getUserDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.getUser = getUser;
+const updateUser = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.body;
+        let data = yield (0, CommonService_1.updateUserDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.updateUser = updateUser;
+const removeUser = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.body;
+        let data = yield (0, CommonService_1.removeUserDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.removeUser = removeUser;
+const getAllUnit = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let data = yield (0, CommonService_1.getAllUnitDetails)();
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.getAllUnit = getAllUnit;
+const getAllMaterial = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let data = yield (0, CommonService_1.getAllMaterialDetails)();
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.getAllMaterial = getAllMaterial;
+const addJobTypeMaterial = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.body;
+        let data = yield (0, CommonService_1.addJobTypeMaterialDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.addJobTypeMaterial = addJobTypeMaterial;
+const updateJobTypeMaterial = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.body;
+        let data = yield (0, CommonService_1.updateJobTypeMaterialDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.updateJobTypeMaterial = updateJobTypeMaterial;
+const getJobTypeMaterial = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.query;
+        let data = yield (0, CommonService_1.getJobTypeMaterialDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        console.log("e", e);
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.getJobTypeMaterial = getJobTypeMaterial;
+const addInventory = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.body;
+        let data = yield (0, CommonService_1.addInventoryDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.addInventory = addInventory;
+const updateInventory = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.body;
+        let data = yield (0, CommonService_1.updateInventoryDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.updateInventory = updateInventory;
+const getInventory = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.query;
+        let data = yield (0, CommonService_1.getInventoryDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        console.log("e", e);
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.getInventory = getInventory;
+const getJobTypeMaterialList = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.query;
+        let data = yield (0, CommonService_1.getJobTypeMaterialListDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        console.log("e", e);
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.getJobTypeMaterialList = getJobTypeMaterialList;
+const getJobTypeMaterialDataList = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.query;
+        let data = yield (0, CommonService_1.getJobTypeMaterialDataListDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        console.log("e", e);
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        });
+    }
+});
+exports.getJobTypeMaterialDataList = getJobTypeMaterialDataList;

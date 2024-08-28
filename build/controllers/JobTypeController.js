@@ -13,7 +13,6 @@ exports.removeJobType = exports.updateJobType = exports.getJobTypes = exports.ad
 const JobTypeService_1 = require("../services/JobTypeService");
 const handleResponse_1 = require("../utils/handleResponse");
 const ResponseStatus_1 = require("../utils/constants/ResponseStatus");
-// Controller for creating JoType
 const addJobType = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const inputs = request.body;
@@ -29,7 +28,6 @@ const addJobType = (request, response) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.addJobType = addJobType;
-// Controller for fetching JoTypes
 const getJobTypes = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const query = request.query;
@@ -44,15 +42,18 @@ const getJobTypes = (request, response) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.getJobTypes = getJobTypes;
-// Controller for updating JoType
 const updateJobType = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id } = request.params;
         const inputs = request.body;
-        const data = yield (0, JobTypeService_1.updateJobType)(parseInt(id), inputs);
-        return (0, handleResponse_1.sendResponse)(request, response, data);
+        const data = yield (0, JobTypeService_1.updateJobType)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
+            message: "Job type updated successfully",
+            data
+        });
     }
     catch (e) {
+        console.log('err', e);
         return (0, handleResponse_1.sendResponse)(request, response, {
             status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
             message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
@@ -60,7 +61,6 @@ const updateJobType = (request, response) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.updateJobType = updateJobType;
-// Controller for removing JoType
 const removeJobType = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = request.params;

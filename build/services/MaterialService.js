@@ -18,10 +18,8 @@ const createMaterial = (data) => __awaiter(void 0, void 0, void 0, function* () 
         const material = yield lib_1.prisma.material.create({
             data: {
                 name: data.name,
-                unitId: data.unitId,
-                type: data.type,
-                color: data.color,
-                status: data.status
+                unitId: parseInt(data.unitId),
+                displayName: data.displayName
             },
         });
         return {
@@ -71,13 +69,11 @@ exports.fetchMaterials = fetchMaterials;
 const updateMaterial = (data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const material = yield lib_1.prisma.material.update({
-            where: { id: data.id },
+            where: { id: parseInt(data.id) },
             data: {
                 name: data.name,
-                unitId: data.unitId,
-                type: data.type,
-                color: data.color,
-                status: data.status
+                unitId: parseInt(data.unitId),
+                displayName: data.displayName
             },
         });
         return {

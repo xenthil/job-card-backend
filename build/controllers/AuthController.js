@@ -64,24 +64,30 @@ const register = (request, response) => __awaiter(void 0, void 0, void 0, functi
 exports.register = register;
 const verifyToken = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const token = request.cookies.token;
-        const SECRET = process.env.SECRET_KEY || "job_secret";
-        jsonwebtoken_1.default.verify(token, SECRET, (err, decoded) => {
-            if (err) {
-                if (err.name === 'TokenExpiredError') {
-                    return response.status(401).json({ message: 'Token expired' });
+        const authHeader = request.headers.token;
+        if (authHeader) {
+            const token = authHeader.split(" ")[1];
+            const SECRET = process.env.SECRET_KEY || "job_secret";
+            jsonwebtoken_1.default.verify(token, SECRET, (err, decoded) => {
+                if (err) {
+                    if (err.name === 'TokenExpiredError') {
+                        return response.status(401).json({ message: 'Token expired' });
+                    }
+                    return response.status(401).json({ message: 'Failed to authenticate token' });
                 }
-                return response.status(401).json({ message: 'Failed to authenticate token' });
-            }
-            let data = {
-                user_id: decoded.id,
-                role: decoded.role,
-                firstName: decoded.firstName,
-                lastName: decoded.lastName,
-                email: decoded.email,
-            };
-            return response.status(200).json({ status: 200, message: "Token is valid", data });
-        });
+                let data = {
+                    user_id: decoded.id,
+                    role: decoded.role,
+                    firstName: decoded.firstName,
+                    lastName: decoded.lastName,
+                    email: decoded.email,
+                };
+                return response.status(200).json({ status: 200, message: "Token is valid", data });
+            });
+        }
+        else {
+            return response.status(401).json({ message: 'Failed to authenticate token' });
+        }
     }
     catch (e) {
         return (0, handleResponse_1.sendResponse)(request, response, {
