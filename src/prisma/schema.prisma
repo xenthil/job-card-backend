@@ -15,8 +15,8 @@ model User {
   password String
   status Boolean?
   token String?
-  role Int
-  roleId Role @relation(fields: [role],references: [id])
+  roleId Int
+  role Role @relation(fields: [roleId],references: [id])
   materialProduction MaterialProduction[]
   materialFiling MaterialFiling[]
   shiftId Int @map("shift_id")
