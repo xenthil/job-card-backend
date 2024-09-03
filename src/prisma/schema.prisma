@@ -96,6 +96,7 @@ model MaterialInwardDetails{
   jobExpenses JobExpenses[]
   materialProduction MaterialProduction[]
   materialFiling MaterialFiling[]
+  materialDispatch MaterialDispatch[]
   @@map("material_inward_details")
 }
 
@@ -141,6 +142,21 @@ model MaterialFiling{
   updatedAt DateTime @updatedAt
     
   @@map("material_filing")
+}
+
+model MaterialDispatch{
+  id Int @id @default(autoincrement())
+  MaterialInwardDetailsId Int @map("material_inward_id")
+  materialInwardDetails MaterialInwardDetails @relation(fields: [MaterialInwardDetailsId],references: [id])
+  receivedQty Int? @map("received_qty")
+  invoiceNo String? @map("invoice_no")
+  invoiceDate String? @map("invoice_date")
+  invoiceAmount String? @map("invoice_amount")
+  status Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+    
+  @@map("material_dispatch")
 }
 
 model Floor{

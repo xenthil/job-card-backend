@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router,Request,Response } from "express";
 import {
   getJobType,
   addShift,
@@ -64,6 +64,23 @@ route.put("/updateInventory", updateInventory);
 route.get("/getInventory", getInventory);
 route.get("/getJobTypeMaterialList", getJobTypeMaterialList);
 route.get("/getJobTypeMaterialDataList", getJobTypeMaterialDataList);
+route.get("/non-blocking",(req:Request,res:Response)=>{
+     res.status(200).send("non-blociking")
+} );
+route.get("/blocking",async(req:Request,res:Response)=>{
+  const promise = new Promise((Resolve,Reject)=>{
+    let counter:number = 0;
+    for  (let i =0 ; i < 20000000000 ; i++){
+     counter++
+    }
+    Resolve(counter)
+  })
+  promise.then((res)=>{
+    console.log(res)
+  })
+ 
+  res.status(200).send("blociking")
+} );
 
 
 export default route;

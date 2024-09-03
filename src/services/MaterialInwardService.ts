@@ -296,20 +296,20 @@ const assignJobDetails = async (data: any) => {
         },
       });
 
-      let material = data.jobTypeMaterial
-      let materialInfo:any = []
-      material.forEach((element:any) => {
-        let materialData:any = {}
-        materialData.materrialId = parseInt(element.name)
-        materialData.expectedQty = parseInt(element.qty)
-        materialData.materialInwardDetailsId = data.id
-        materialData.displayName = element.displayName
-        materialInfo.push(materialData)
-      });
+      // let material = data.jobTypeMaterial
+      // let materialInfo:any = []
+      // material.forEach((element:any) => {
+      //   let materialData:any = {}
+      //   materialData.materrialId = parseInt(element.name)
+      //   materialData.expectedQty = parseInt(element.qty)
+      //   materialData.materialInwardDetailsId = data.id
+      //   materialData.displayName = element.displayName
+      //   materialInfo.push(materialData)
+      // });
 
-      await prisma.jobExpenses.createMany({
-        data: materialInfo
-      });
+      // await prisma.jobExpenses.createMany({
+      //   data: materialInfo
+      // });
 
       await prisma.materialInwardDetails.update({
         where: {
@@ -486,17 +486,33 @@ const assignFilingDetails = async (data: any) => {
         },
       });
       
-      data.jobTypeMaterial.forEach(async(element:any) => {
-        await prisma.jobExpenses.updateMany({
-          where: {
-            materrialId: parseInt(element?.name),
-            materialInwardDetailsId : parseInt(data.id)
-          },
-          data: {
-            usedQty: parseInt(element.qty), 
-          },
-        });
+      // data.jobTypeMaterial.forEach(async(element:any) => {
+      //   await prisma.jobExpenses.updateMany({
+      //     where: {
+      //       materrialId: parseInt(element?.name),
+      //       materialInwardDetailsId : parseInt(data.id)
+      //     },
+      //     data: {
+      //       usedQty: parseInt(element.qty), 
+      //     },
+      //   });
         
+      // });
+
+      let material = data.jobTypeMaterial
+      let materialInfo:any = []
+      material.forEach((element:any) => {
+        let materialData:any = {}
+        materialData.materrialId = parseInt(element.name)
+        materialData.expectedQty = parseInt(element.qty)
+        materialData.usedQty = parseInt(element.cqty)
+        materialData.materialInwardDetailsId = data.id
+        materialData.displayName = element.displayName
+        materialInfo.push(materialData)
+      });
+
+      await prisma.jobExpenses.createMany({
+        data: materialInfo
       });
 
       if (productionQty == totalQty) {
@@ -723,6 +739,13 @@ const toDispatchDetails = async (data: any) => {
         },
       });
 
+      await prisma.materialDispatch.create({
+        data:{
+         receivedQty : parseInt(data.completedQty),
+         MaterialInwardDetailsId: data.id,
+        }
+      })
+
       if (filingQty == totalQty) {
         await prisma.materialInwardDetails.update({
           where: {
@@ -826,27 +849,27 @@ const getDispatchDetails = async (query: any) => {
     const page = query?.page ? parseInt(query?.page) : 1;
     const limit = query?.limit ? parseInt(query?.limit) : 10;
 
-    const dispatch = await prisma.materialInwardDetails.findMany({
+    const dispatch = await prisma.materialDispatch.findMany({
       skip: (page - 1) * limit,
       take: limit,
-      where: {
-        jobStatus: "4",
-      },
       include: {
-        materialInward: {
-          include: {client :true}
-        },
-        jobType: true,
+        materialInwardDetails: {
+          include: {
+              jobType: true,
+              materialInward : {
+                 include : {
+                   client :true
+                 }
+              }
+          }
+        }
       },
     });
-    const count: number = await prisma.materialInwardDetails.count({
-      where: {
-        jobStatus: "4",
-      },
-    });
+
+    const count: number = await prisma.materialDispatch.count();
     let response = {
       status: STATUS_CODE.SUCCESS_CODE,
-      message: "Jobs has been fetched successfully",
+      message: "Dispatch has been fetched successfully",
       data: { dispatch, count },
     };
     return response;
