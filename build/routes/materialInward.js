@@ -39,4 +39,5 @@ router.get('/getDispatch', MaterialInwardController_1.getDispatch);
 router.get('/getDashboard', MaterialInwardController_1.getDashboard);
 router.get('/getCleaning', MaterialInwardController_1.getCeaningData);
 router.put('/updateCeaning', MaterialInwardController_1.updateCeaning);
+router.put('/updateDispatch', MaterialInwardController_1.updateDispatch);
 exports.default = router;

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCeaning = exports.getCeaningData = exports.getDashboard = exports.getDispatch = exports.forwardFiling = exports.toDispatch = exports.getFiling = exports.forwardJob = exports.assignFiling = exports.getProduction = exports.assignJob = exports.getJobs = exports.removeMaterialInward = exports.updateMaterialInward = exports.getMaterialInward = exports.addMaterialInward = void 0;
+exports.updateDispatch = exports.updateCeaning = exports.getCeaningData = exports.getDashboard = exports.getDispatch = exports.forwardFiling = exports.toDispatch = exports.getFiling = exports.forwardJob = exports.assignFiling = exports.getProduction = exports.assignJob = exports.getJobs = exports.removeMaterialInward = exports.updateMaterialInward = exports.getMaterialInward = exports.addMaterialInward = void 0;
 const MaterialInwardService_1 = require("../services/MaterialInwardService");
 const handleResponse_1 = require("../utils/handleResponse");
 const ResponseStatus_1 = require("../utils/constants/ResponseStatus");
@@ -238,3 +238,17 @@ const updateCeaning = (request, response) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.updateCeaning = updateCeaning;
+const updateDispatch = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let inputs = request.body;
+        let data = yield (0, MaterialInwardService_1.updateDispatchDetails)(inputs);
+        return (0, handleResponse_1.sendResponse)(request, response, data);
+    }
+    catch (e) {
+        return (0, handleResponse_1.sendResponse)(request, response, {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR
+        });
+    }
+});
+exports.updateDispatch = updateDispatch;

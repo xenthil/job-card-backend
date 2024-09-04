@@ -15,7 +15,8 @@ import {
     getDispatchDetails,
     getDashboardDetails,
     getCeaningDetails,
-    updateCeaningDetails
+    updateCeaningDetails,
+    updateDispatchDetails
  } from '../services/MaterialInwardService'
 import { sendResponse } from '../utils/handleResponse'
 import { STATUS_CODE, RESPONSE_MESSAGE } from "../utils/constants/ResponseStatus"
@@ -231,6 +232,19 @@ const updateCeaning = async (request:Request,response:Response) =>{
     }
 }
 
+const updateDispatch = async (request:Request,response:Response) =>{
+    try{
+        let inputs = request.body;
+        let data = await updateDispatchDetails(inputs);
+        return sendResponse(request,response,data);
+    }catch(e){
+        return sendResponse(request,response,{
+            status : STATUS_CODE.SERVER_ERROR_CODE,
+            message : RESPONSE_MESSAGE.INTERNAL_ERROR
+        });
+    }
+}
+
 export { 
     addMaterialInward, 
     getMaterialInward,
@@ -246,5 +260,6 @@ export {
     getDispatch,
     getDashboard,
     getCeaningData,
-    updateCeaning
+    updateCeaning,
+    updateDispatch
 }

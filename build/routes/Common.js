@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const CommonController_1 = require("../controllers/CommonController");
@@ -33,4 +42,20 @@ route.put("/updateInventory", CommonController_1.updateInventory);
 route.get("/getInventory", CommonController_1.getInventory);
 route.get("/getJobTypeMaterialList", CommonController_1.getJobTypeMaterialList);
 route.get("/getJobTypeMaterialDataList", CommonController_1.getJobTypeMaterialDataList);
+route.get("/non-blocking", (req, res) => {
+    res.status(200).send("non-blociking");
+});
+route.get("/blocking", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const promise = new Promise((Resolve, Reject) => {
+        let counter = 0;
+        for (let i = 0; i < 20000000000; i++) {
+            counter++;
+        }
+        Resolve(counter);
+    });
+    promise.then((res) => {
+        console.log(res);
+    });
+    res.status(200).send("blociking");
+}));
 exports.default = route;

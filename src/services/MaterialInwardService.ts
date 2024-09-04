@@ -1000,6 +1000,37 @@ const updateCeaningDetails = async (data:any)=>{
   }
 }
 
+const updateDispatchDetails = async (data:any)=>{
+  try{
+    await prisma.materialDispatch.update({
+      where : {
+         id : data.id
+      },
+      data : {
+        status : 2,
+        invoiceNo : data.invoiceNo,
+        invoiceDate : data.invoiceDate,
+        invoiceAmount : data.invoiceAmount,
+      }
+    })
+    let response = {
+      status: STATUS_CODE.SUCCESS_CODE,
+      message: "Dispatch details has been updated successfully",
+      data: [],
+    };
+    return response;
+  }catch(e){
+    console.log("err", e);
+    let error = {
+      status: STATUS_CODE.SERVER_ERROR_CODE,
+      message: RESPONSE_MESSAGE.INTERNAL_ERROR,
+    };
+    return error;
+  }
+}
+
+
+
 export {
   create,
   get,
@@ -1017,4 +1048,5 @@ export {
   getDashboardDetails,
   getCeaningDetails,
   updateCeaningDetails,
+  updateDispatchDetails
 };

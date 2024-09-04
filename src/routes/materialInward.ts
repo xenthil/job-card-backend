@@ -15,7 +15,8 @@ import {
   getDispatch,
   getDashboard,
   getCeaningData,
-  updateCeaning
+  updateCeaning,
+  updateDispatch
  } from '../controllers/MaterialInwardController'
 import multer from 'multer';
 import path from 'path';
@@ -56,6 +57,7 @@ router.get('/getDispatch',getDispatch)
 router.get('/getDashboard',getDashboard)
 router.get('/getCleaning',getCeaningData)
 router.put('/updateCeaning',updateCeaning)
+router.put('/updateDispatch',updateDispatch)
 
 
 
