@@ -40,4 +40,5 @@ router.get('/getDashboard', MaterialInwardController_1.getDashboard);
 router.get('/getCleaning', MaterialInwardController_1.getCeaningData);
 router.put('/updateCeaning', MaterialInwardController_1.updateCeaning);
 router.put('/updateDispatch', MaterialInwardController_1.updateDispatch);
+router.put('/updateProduction', MaterialInwardController_1.updateProduction);
 exports.default = router;

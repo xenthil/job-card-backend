@@ -411,11 +411,11 @@ const assignFilingDetails = async (data: any) => {
         materialProductionId: data.materialProductionId,
       },
     });
-    if(!jobexpense){
+    if(jobexpense && jobexpense?.length == 0){
       let response = {
         status: STATUS_CODE.BAD_REQUEST_CODE,
         message: RESPONSE_MESSAGE.VALIDATION_ERROR,
-        data: [`please enter starting Qty `],
+        data: [`please enter starting level Qty in production tab `],
       };
       return response;
     }

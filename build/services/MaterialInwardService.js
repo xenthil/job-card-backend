@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateDispatchDetails = exports.updateCeaningDetails = exports.getCeaningDetails = exports.getDashboardDetails = exports.getDispatchDetails = exports.forwardFilingDetails = exports.toDispatchDetails = exports.getFilingDetails = exports.forwardJobDetails = exports.assignFilingDetails = exports.getProductionDetails = exports.assignJobDetails = exports.getJobsDetails = exports.remove = exports.update = exports.get = exports.create = void 0;
+exports.updateProductionDetails = exports.updateDispatchDetails = exports.updateCeaningDetails = exports.getCeaningDetails = exports.getDashboardDetails = exports.getDispatchDetails = exports.forwardFilingDetails = exports.toDispatchDetails = exports.getFilingDetails = exports.forwardJobDetails = exports.assignFilingDetails = exports.getProductionDetails = exports.assignJobDetails = exports.getJobsDetails = exports.remove = exports.update = exports.get = exports.create = void 0;
 const lib_1 = require("../prisma/lib");
 const ResponseStatus_1 = require("../utils/constants/ResponseStatus");
 const fs_1 = __importDefault(require("fs"));
@@ -41,9 +41,9 @@ const create = (data) => __awaiter(void 0, void 0, void 0, function* () {
             materialInfo.quantity = parseInt(data.quantity);
             materialInfo.receivedDate = new Date(data.receivedDate);
             materialInfo.estimatedDispatchDate = new Date(data.estimatedDispatchDate);
-            materialInfo.type = parseInt(data.type);
-            materialInfo.length = data.length,
-                materialInfo.jobTypeId = parseInt(data.jobTypeId);
+            materialInfo.type = data.type;
+            // materialInfo.length = data.length,
+            materialInfo.jobTypeId = parseInt(data.jobTypeId);
             materialInfo.jobStatus = "1";
             materialInfo.jobId = jobId;
             materialInfo.inspection = data.inspection;
@@ -132,9 +132,9 @@ const update = (inputs) => __awaiter(void 0, void 0, void 0, function* () {
             materialInfo.quantity = parseInt(data.quantity);
             materialInfo.receivedDate = new Date(data.receivedDate);
             materialInfo.estimatedDispatchDate = new Date(data.estimatedDispatchDate);
-            materialInfo.type = parseInt(data.type);
-            materialInfo.length = data.length,
-                materialInfo.jobTypeId = parseInt(data.jobTypeId);
+            materialInfo.type = data.type;
+            // materialInfo.length = data.length,
+            materialInfo.jobTypeId = parseInt(data.jobTypeId);
             materialInfo.jobStatus = "1";
             materialInfo.inspection = data.inspection;
             materialInfo.cleaning = parseInt(data.cleaning);
@@ -288,19 +288,6 @@ const assignJobDetails = (data) => __awaiter(void 0, void 0, void 0, function* (
                     id: true,
                 },
             });
-            // let material = data.jobTypeMaterial
-            // let materialInfo:any = []
-            // material.forEach((element:any) => {
-            //   let materialData:any = {}
-            //   materialData.materrialId = parseInt(element.name)
-            //   materialData.expectedQty = parseInt(element.qty)
-            //   materialData.materialInwardDetailsId = data.id
-            //   materialData.displayName = element.displayName
-            //   materialInfo.push(materialData)
-            // });
-            // await prisma.jobExpenses.createMany({
-            //   data: materialInfo
-            // });
             yield lib_1.prisma.materialInwardDetails.update({
                 where: {
                     id: data.id,
@@ -361,6 +348,7 @@ const getProductionDetails = (query) => __awaiter(void 0, void 0, void 0, functi
             take: limit,
             where: Object.assign({ status: { not: 2 } }, where),
             include: {
+                jobExpenses: true,
                 materialInwardDetails: {
                     include: {
                         jobType: true,
@@ -398,6 +386,19 @@ const getProductionDetails = (query) => __awaiter(void 0, void 0, void 0, functi
 exports.getProductionDetails = getProductionDetails;
 const assignFilingDetails = (data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        let jobexpense = yield lib_1.prisma.jobExpenses.findMany({
+            where: {
+                materialProductionId: data.materialProductionId,
+            },
+        });
+        if (jobexpense && (jobexpense === null || jobexpense === void 0 ? void 0 : jobexpense.length) == 0) {
+            let response = {
+                status: ResponseStatus_1.STATUS_CODE.BAD_REQUEST_CODE,
+                message: ResponseStatus_1.RESPONSE_MESSAGE.VALIDATION_ERROR,
+                data: [`please enter starting level Qty in production tab `],
+            };
+            return response;
+        }
         let job = yield lib_1.prisma.materialInwardDetails.findFirst({
             where: {
                 id: data.id,
@@ -451,31 +452,18 @@ const assignFilingDetails = (data) => __awaiter(void 0, void 0, void 0, function
                     id: true,
                 },
             });
-            // data.jobTypeMaterial.forEach(async(element:any) => {
-            //   await prisma.jobExpenses.updateMany({
-            //     where: {
-            //       materrialId: parseInt(element?.name),
-            //       materialInwardDetailsId : parseInt(data.id)
-            //     },
-            //     data: {
-            //       usedQty: parseInt(element.qty), 
-            //     },
-            //   });
-            // });
-            let material = data.jobTypeMaterial;
-            let materialInfo = [];
-            material.forEach((element) => {
-                let materialData = {};
-                materialData.materrialId = parseInt(element.name);
-                materialData.expectedQty = parseInt(element.qty);
-                materialData.usedQty = parseInt(element.cqty);
-                materialData.materialInwardDetailsId = data.id;
-                materialData.displayName = element.displayName;
-                materialInfo.push(materialData);
-            });
-            yield lib_1.prisma.jobExpenses.createMany({
-                data: materialInfo
-            });
+            data.jobTypeMaterial.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
+                yield lib_1.prisma.jobExpenses.updateMany({
+                    where: {
+                        materrialId: parseInt(element === null || element === void 0 ? void 0 : element.name),
+                        materialInwardDetailsId: parseInt(data.id),
+                        materialProductionId: parseInt(data.materialProductionId)
+                    },
+                    data: {
+                        usedQty: parseInt(element.cqty),
+                    },
+                });
+            }));
             if (productionQty == totalQty) {
                 yield lib_1.prisma.materialInwardDetails.update({
                     where: {
@@ -955,3 +943,41 @@ const updateDispatchDetails = (data) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.updateDispatchDetails = updateDispatchDetails;
+const updateProductionDetails = (data) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let material = data.jobTypeMaterial;
+        let materialInfo = [];
+        yield lib_1.prisma.jobExpenses.deleteMany({
+            where: {
+                materialProductionId: data.materialProductionId
+            }
+        });
+        material.forEach((element) => {
+            let materialData = {};
+            materialData.materrialId = parseInt(element.name);
+            materialData.expectedQty = parseInt(element.qty);
+            materialData.materialInwardDetailsId = data.id;
+            materialData.displayName = element.displayName;
+            materialData.materialProductionId = data.materialProductionId;
+            materialInfo.push(materialData);
+        });
+        yield lib_1.prisma.jobExpenses.createMany({
+            data: materialInfo
+        });
+        let response = {
+            status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
+            message: "Production details has been updated successfully",
+            data: [],
+        };
+        return response;
+    }
+    catch (e) {
+        console.log("err", e);
+        let error = {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        };
+        return error;
+    }
+});
+exports.updateProductionDetails = updateProductionDetails;

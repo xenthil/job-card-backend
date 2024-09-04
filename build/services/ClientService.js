@@ -17,6 +17,10 @@ const createClient = (data) => __awaiter(void 0, void 0, void 0, function* () {
         let user = yield lib_1.prisma.client.create({
             data: {
                 clientName: data.clientName,
+                bankAccount: data.bankAccount,
+                bankBranch: data.bankBranch,
+                ifsc: data.ifsc,
+                namePerBank: data.namePerBank,
                 status: true,
                 address: {
                     create: {
@@ -116,21 +120,11 @@ const update = (data) => __awaiter(void 0, void 0, void 0, function* () {
             },
             data: {
                 clientName: data.clientName,
-                status: true,
-                address: {
-                    create: {
-                        email: data.email,
-                        contact: data.contact,
-                        address: data.address,
-                        area: data.area,
-                        city: data.city,
-                        pincode: data.pincode,
-                        contactPersonName: data.contactPersonName,
-                        contactPersonContact: data.contactPersonContact,
-                        description: data.description,
-                        status: true
-                    },
-                }
+                bankAccount: data.bankAccount,
+                bankBranch: data.bankBranch,
+                ifsc: data.ifsc,
+                namePerBank: data.namePerBank,
+                status: true
             },
             select: {
                 clientName: true,
