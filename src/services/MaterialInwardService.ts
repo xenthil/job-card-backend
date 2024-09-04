@@ -34,8 +34,8 @@ const create = async (data: any) => {
       materialInfo.quantity = parseInt(data.quantity);
       materialInfo.receivedDate = new Date(data.receivedDate);
       materialInfo.estimatedDispatchDate = new Date(data.estimatedDispatchDate);
-      materialInfo.type = parseInt(data.type);
-      materialInfo.length = data.length,
+      materialInfo.type = data.type;
+      // materialInfo.length = data.length,
       materialInfo.jobTypeId = parseInt(data.jobTypeId);
       materialInfo.jobStatus = "1";
       materialInfo.jobId = jobId;
@@ -129,8 +129,8 @@ const update = async (inputs: any) => {
       materialInfo.quantity = parseInt(data.quantity);
       materialInfo.receivedDate = new Date(data.receivedDate);
       materialInfo.estimatedDispatchDate = new Date(data.estimatedDispatchDate);
-      materialInfo.type = parseInt(data.type);
-      materialInfo.length = data.length,
+      materialInfo.type = data.type;
+      // materialInfo.length = data.length,
       materialInfo.jobTypeId = parseInt(data.jobTypeId);
       materialInfo.jobStatus = "1";
       materialInfo.inspection = data.inspection;
@@ -296,21 +296,6 @@ const assignJobDetails = async (data: any) => {
         },
       });
 
-      // let material = data.jobTypeMaterial
-      // let materialInfo:any = []
-      // material.forEach((element:any) => {
-      //   let materialData:any = {}
-      //   materialData.materrialId = parseInt(element.name)
-      //   materialData.expectedQty = parseInt(element.qty)
-      //   materialData.materialInwardDetailsId = data.id
-      //   materialData.displayName = element.displayName
-      //   materialInfo.push(materialData)
-      // });
-
-      // await prisma.jobExpenses.createMany({
-      //   data: materialInfo
-      // });
-
       await prisma.materialInwardDetails.update({
         where: {
           id: data.id,
@@ -379,6 +364,7 @@ const getProductionDetails = async (query: any) => {
         ...where,
       },
       include: {
+        jobExpenses :true,
         materialInwardDetails: {
           include: {
             jobType: true,
@@ -419,6 +405,21 @@ const getProductionDetails = async (query: any) => {
 
 const assignFilingDetails = async (data: any) => {
   try {
+   
+    let jobexpense = await prisma.jobExpenses.findMany({
+      where: {
+        materialProductionId: data.materialProductionId,
+      },
+    });
+    if(!jobexpense){
+      let response = {
+        status: STATUS_CODE.BAD_REQUEST_CODE,
+        message: RESPONSE_MESSAGE.VALIDATION_ERROR,
+        data: [`please enter starting Qty `],
+      };
+      return response;
+    }
+
     let job = await prisma.materialInwardDetails.findFirst({
       where: {
         id: data.id,
@@ -486,33 +487,18 @@ const assignFilingDetails = async (data: any) => {
         },
       });
       
-      // data.jobTypeMaterial.forEach(async(element:any) => {
-      //   await prisma.jobExpenses.updateMany({
-      //     where: {
-      //       materrialId: parseInt(element?.name),
-      //       materialInwardDetailsId : parseInt(data.id)
-      //     },
-      //     data: {
-      //       usedQty: parseInt(element.qty), 
-      //     },
-      //   });
+      data.jobTypeMaterial.forEach(async(element:any) => {
+        await prisma.jobExpenses.updateMany({
+          where: {
+            materrialId: parseInt(element?.name),
+            materialInwardDetailsId : parseInt(data.id),
+            materialProductionId : parseInt(data.materialProductionId)
+          },
+          data: {
+            usedQty: parseInt(element.cqty), 
+          },
+        });
         
-      // });
-
-      let material = data.jobTypeMaterial
-      let materialInfo:any = []
-      material.forEach((element:any) => {
-        let materialData:any = {}
-        materialData.materrialId = parseInt(element.name)
-        materialData.expectedQty = parseInt(element.qty)
-        materialData.usedQty = parseInt(element.cqty)
-        materialData.materialInwardDetailsId = data.id
-        materialData.displayName = element.displayName
-        materialInfo.push(materialData)
-      });
-
-      await prisma.jobExpenses.createMany({
-        data: materialInfo
       });
 
       if (productionQty == totalQty) {
@@ -1029,6 +1015,48 @@ const updateDispatchDetails = async (data:any)=>{
   }
 }
 
+const updateProductionDetails = async (data:any)=>{
+  try{
+    let material = data.jobTypeMaterial
+    let materialInfo:any = []
+
+    await prisma.jobExpenses.deleteMany({
+      where :{
+        materialProductionId : data.materialProductionId
+      } 
+    });
+
+    material.forEach((element:any) => {
+      let materialData:any = {}
+      materialData.materrialId = parseInt(element.name)
+      materialData.expectedQty = parseInt(element.qty)
+      materialData.materialInwardDetailsId = data.id
+      materialData.displayName = element.displayName
+      materialData.materialProductionId = data.materialProductionId
+      materialInfo.push(materialData)
+    });
+
+    await prisma.jobExpenses.createMany({
+      data: materialInfo
+    });
+    let response = {
+      status: STATUS_CODE.SUCCESS_CODE,
+      message: "Production details has been updated successfully",
+      data: [],
+    };
+    return response;
+  }catch(e){
+    console.log("err", e);
+    let error = {
+      status: STATUS_CODE.SERVER_ERROR_CODE,
+      message: RESPONSE_MESSAGE.INTERNAL_ERROR,
+    };
+    return error;
+  }
+}
+
+
+
 
 
 export {
@@ -1048,5 +1076,6 @@ export {
   getDashboardDetails,
   getCeaningDetails,
   updateCeaningDetails,
-  updateDispatchDetails
+  updateDispatchDetails,
+  updateProductionDetails
 };

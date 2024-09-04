@@ -33,6 +33,10 @@ model Client {
   id Int @id @default(autoincrement())
   clientName String @map("client_name")
   status Boolean?
+  bankAccount String? @map("bank_account")
+  bankBranch String? @map("bank_branch")
+  ifsc String?
+  namePerBank String? @map("name_per_bank")
   address ClientAddress[]
   MaterialInward MaterialInward[]
   createdAt DateTime @default(now())
@@ -117,6 +121,7 @@ model MaterialProduction{
   user User @relation(fields: [shiftIncharge],references: [id])
   remarks String?
   status Int?
+  jobExpenses JobExpenses[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -260,6 +265,8 @@ model JobExpenses {
   material Material @relation(fields: [materrialId],references: [id])
   materialInwardDetailsId Int @map("materialInward_details_id")
   MaterialInwardDetails  MaterialInwardDetails @relation(fields: [materialInwardDetailsId],references: [id])
+  materialProductionId Int? @map("material_production_id")
+  materialProduction  MaterialProduction? @relation(fields: [materialProductionId],references: [id])
   expectedQty Int
   usedQty Int?
   displayName String?

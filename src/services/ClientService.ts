@@ -7,6 +7,10 @@ const createClient = async(data:any)=>{
         let user = await prisma.client.create({
             data:{
                 clientName : data.clientName,
+                bankAccount : data.bankAccount,
+                bankBranch : data.bankBranch,
+                ifsc : data.ifsc,
+                namePerBank : data.namePerBank,
                 status : true,
                 address : {
                     create : {
@@ -108,21 +112,11 @@ const update = async(data:any)=>{
             },
             data:{
                 clientName : data.clientName,
-                status : true,
-                address : {
-                    create : {
-                        email : data.email,
-                        contact : data.contact,
-                        address : data.address,
-                        area : data.area,
-                        city : data.city,
-                        pincode : data.pincode,
-                        contactPersonName : data.contactPersonName,
-                        contactPersonContact : data.contactPersonContact,
-                        description : data.description,
-                        status : true
-                    },
-                }
+                bankAccount : data.bankAccount,
+                bankBranch : data.bankBranch,
+                ifsc : data.ifsc,
+                namePerBank : data.namePerBank,
+                status : true
             }, 
             select : {
                 clientName :true,
