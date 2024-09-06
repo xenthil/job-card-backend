@@ -29,7 +29,9 @@ import {
   updateInventory,
   getInventory,
   getJobTypeMaterialList,
-  getJobTypeMaterialDataList
+  getJobTypeMaterialDataList,
+  getAllClient,
+  getDashboardJob
 } from "../controllers/CommonController";
 
 const route = Router();
@@ -62,6 +64,8 @@ route.get("/getJobTypeMaterial", getJobTypeMaterial);
 route.post("/addInventory", addInventory);
 route.put("/updateInventory", updateInventory);
 route.get("/getInventory", getInventory);
+route.get("/getAllClient", getAllClient);
+route.get("/getDashboardJob", getDashboardJob);
 route.get("/getJobTypeMaterialList", getJobTypeMaterialList);
 route.get("/getJobTypeMaterialDataList", getJobTypeMaterialDataList);
 route.get("/non-blocking",(req:Request,res:Response)=>{

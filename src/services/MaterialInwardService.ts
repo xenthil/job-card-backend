@@ -871,15 +871,28 @@ const getDispatchDetails = async (query: any) => {
 
 const getDashboardDetails = async (query: any) => {
   try {
-    const jobCount: number = await prisma.materialInwardDetails.count();
 
-    const pendingJobCount: number = await prisma.materialInwardDetails.count({
+    const jobCount: number = await prisma.materialInwardDetails.count({
+      where: {
+        jobStatus: {
+          in: ["1","2", "3"],
+        },
+      },
+    });
+
+    const client = await prisma.materialInwardDetails.groupBy({
+      by: ['materialInwardId'],
+      _count: {
+        id: true, 
+      },
       where: {
         jobStatus: {
           in: ["1", "2", "3"],
         },
       },
     });
+
+    const clientCount = client.reduce((acc, group:any) => acc + group._count.id, 0);
 
     const totals = await prisma.materialInwardDetails.aggregate({
       _sum: {
@@ -887,25 +900,38 @@ const getDashboardDetails = async (query: any) => {
       },
       where: {
         jobStatus: {
-          in: ["1", "2", "3"],
+          in: [ "2", "3"],
         },
       },
     });
 
     const totalQuantity = totals._sum.quantity;
-    const noOfMaterials = 0
 
-    const clientCount: number = await prisma.client.count();
+    const productionCount: number = await prisma.materialProduction.count({
+      where: {
+        status: {
+          in: [1],
+        },
+      },
+    });
 
+    const filingCount: number = await prisma.materialFiling.count({
+      where: {
+        status: {
+          in: [1],
+        },
+      },
+    });
+    
     let response = {
       status: STATUS_CODE.SUCCESS_CODE,
       message: "Dashboard details has been fetched successfully",
       data: {
         jobCount,
-        pendingJobCount,
+        productionCount,
         clientCount,
         totalQuantity,
-        noOfMaterials,
+        filingCount,
       },
     };
     return response;

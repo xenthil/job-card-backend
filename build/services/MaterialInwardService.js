@@ -801,36 +801,59 @@ const getDispatchDetails = (query) => __awaiter(void 0, void 0, void 0, function
 exports.getDispatchDetails = getDispatchDetails;
 const getDashboardDetails = (query) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const jobCount = yield lib_1.prisma.materialInwardDetails.count();
-        const pendingJobCount = yield lib_1.prisma.materialInwardDetails.count({
+        const jobCount = yield lib_1.prisma.materialInwardDetails.count({
             where: {
                 jobStatus: {
                     in: ["1", "2", "3"],
                 },
             },
         });
+        const client = yield lib_1.prisma.materialInwardDetails.groupBy({
+            by: ['materialInwardId'],
+            _count: {
+                id: true,
+            },
+            where: {
+                jobStatus: {
+                    in: ["1", "2", "3"],
+                },
+            },
+        });
+        const clientCount = client.reduce((acc, group) => acc + group._count.id, 0);
         const totals = yield lib_1.prisma.materialInwardDetails.aggregate({
             _sum: {
                 quantity: true,
             },
             where: {
                 jobStatus: {
-                    in: ["1", "2", "3"],
+                    in: ["2", "3"],
                 },
             },
         });
         const totalQuantity = totals._sum.quantity;
-        const noOfMaterials = 0;
-        const clientCount = yield lib_1.prisma.client.count();
+        const productionCount = yield lib_1.prisma.materialProduction.count({
+            where: {
+                status: {
+                    in: [1],
+                },
+            },
+        });
+        const filingCount = yield lib_1.prisma.materialFiling.count({
+            where: {
+                status: {
+                    in: [1],
+                },
+            },
+        });
         let response = {
             status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
             message: "Dashboard details has been fetched successfully",
             data: {
                 jobCount,
-                pendingJobCount,
+                productionCount,
                 clientCount,
                 totalQuantity,
-                noOfMaterials,
+                filingCount,
             },
         };
         return response;

@@ -40,6 +40,8 @@ route.get("/getJobTypeMaterial", CommonController_1.getJobTypeMaterial);
 route.post("/addInventory", CommonController_1.addInventory);
 route.put("/updateInventory", CommonController_1.updateInventory);
 route.get("/getInventory", CommonController_1.getInventory);
+route.get("/getAllClient", CommonController_1.getAllClient);
+route.get("/getDashboardJob", CommonController_1.getDashboardJob);
 route.get("/getJobTypeMaterialList", CommonController_1.getJobTypeMaterialList);
 route.get("/getJobTypeMaterialDataList", CommonController_1.getJobTypeMaterialDataList);
 route.get("/non-blocking", (req, res) => {

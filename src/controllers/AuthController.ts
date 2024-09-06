@@ -62,7 +62,6 @@ const verifyToken = async(request:Request, response:Response)=>{
                   }
                   return response.status(401).json({ message: 'Failed to authenticate token' });
                 }
-                console.log('decoded',decoded)
                 let data = {
                     user_id : decoded.id,
                     role:decoded.role,

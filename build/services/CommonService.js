@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getJobTypeMaterialDataListDetails = exports.getJobTypeMaterialListDetails = exports.getInventoryDetails = exports.updateInventoryDetails = exports.addInventoryDetails = exports.getJobTypeMaterialDetails = exports.updateJobTypeMaterialDetails = exports.addJobTypeMaterialDetails = exports.getAllMaterialDetails = exports.getAllUnitDetails = exports.removeUserDetails = exports.updateUserDetails = exports.getUserDetails = exports.addUserDetails = exports.addRoleDetails = exports.getRoleDetails = exports.getAllRoleDetails = exports.updateRoleDetails = exports.getInchargeDetails = exports.getAllFloorDetails = exports.getAllShiftDetails = exports.removeFloorDetails = exports.updateFloorDetails = exports.getFloorDetails = exports.addFloorDetails = exports.removeShiftDetails = exports.updateShiftDetails = exports.getShiftDetails = exports.addShiftDetails = exports.fetchJobType = void 0;
+exports.getDashboardJobDetails = exports.getAllClientDetails = exports.getJobTypeMaterialDataListDetails = exports.getJobTypeMaterialListDetails = exports.getInventoryDetails = exports.updateInventoryDetails = exports.addInventoryDetails = exports.getJobTypeMaterialDetails = exports.updateJobTypeMaterialDetails = exports.addJobTypeMaterialDetails = exports.getAllMaterialDetails = exports.getAllUnitDetails = exports.removeUserDetails = exports.updateUserDetails = exports.getUserDetails = exports.addUserDetails = exports.addRoleDetails = exports.getRoleDetails = exports.getAllRoleDetails = exports.updateRoleDetails = exports.getInchargeDetails = exports.getAllFloorDetails = exports.getAllShiftDetails = exports.removeFloorDetails = exports.updateFloorDetails = exports.getFloorDetails = exports.addFloorDetails = exports.removeShiftDetails = exports.updateShiftDetails = exports.getShiftDetails = exports.addShiftDetails = exports.fetchJobType = void 0;
 const lib_1 = require("../prisma/lib");
 const ResponseStatus_1 = require("../utils/constants/ResponseStatus");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -808,3 +808,91 @@ const getJobTypeMaterialDataListDetails = (query) => __awaiter(void 0, void 0, v
     }
 });
 exports.getJobTypeMaterialDataListDetails = getJobTypeMaterialDataListDetails;
+const getAllClientDetails = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const client = yield lib_1.prisma.client.findMany();
+        let response = {
+            status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
+            message: "Client has been fetched successfully",
+            data: client,
+        };
+        return response;
+    }
+    catch (errors) {
+        console.log("err", errors);
+        let error = {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        };
+        return error;
+    }
+});
+exports.getAllClientDetails = getAllClientDetails;
+const getDashboardJobDetails = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const page = (query === null || query === void 0 ? void 0 : query.page) ? parseInt(query === null || query === void 0 ? void 0 : query.page) : 1;
+        const limit = (query === null || query === void 0 ? void 0 : query.limit) ? parseInt(query === null || query === void 0 ? void 0 : query.limit) : 10;
+        const client = query === null || query === void 0 ? void 0 : query.client;
+        const process = (query === null || query === void 0 ? void 0 : query.process) ? parseInt(query === null || query === void 0 ? void 0 : query.process) : 0;
+        const startDate = query === null || query === void 0 ? void 0 : query.startDate;
+        const endDate = query === null || query === void 0 ? void 0 : query.endDate;
+        let where = {};
+        // if (client) {
+        //   where.clientId = client;
+        // }
+        if (process) {
+            where.jobTypeId = process;
+        }
+        if (startDate && endDate) {
+            where.receivedDate = {
+                gte: new Date(startDate),
+                lte: new Date(endDate),
+            };
+        }
+        else if (startDate) {
+            where.receivedDate = {
+                gte: new Date(startDate),
+            };
+        }
+        else if (endDate) {
+            where.receivedDate = {
+                lte: new Date(endDate),
+            };
+        }
+        const dashboardJob = yield lib_1.prisma.materialInwardDetails.findMany({
+            skip: (page - 1) * limit,
+            take: limit,
+            where: Object.assign(Object.assign({}, where), { materialInward: client ? {
+                    clientId: parseInt(client)
+                } : undefined }),
+            include: {
+                materialInward: {
+                    include: {
+                        client: true,
+                    },
+                },
+                jobType: true,
+            },
+        });
+        const count = yield lib_1.prisma.materialInwardDetails.count({
+            where: Object.assign(Object.assign({}, where), { materialInward: client ? {
+                    clientId: parseInt(client)
+                } : undefined }),
+        });
+        let response = {
+            status: ResponseStatus_1.STATUS_CODE.SUCCESS_CODE,
+            message: "Job has been fetched successfully",
+            data: { dashboardJob, count },
+        };
+        return response;
+    }
+    catch (errors) {
+        console.log("err", errors);
+        let error = {
+            status: ResponseStatus_1.STATUS_CODE.SERVER_ERROR_CODE,
+            message: ResponseStatus_1.RESPONSE_MESSAGE.INTERNAL_ERROR,
+        };
+        return error;
+    }
+});
+exports.getDashboardJobDetails = getDashboardJobDetails;

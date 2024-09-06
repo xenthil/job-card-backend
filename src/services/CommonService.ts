@@ -783,6 +783,102 @@ const getJobTypeMaterialDataListDetails = async (query: any) => {
   }
 };
 
+const getAllClientDetails = async()=>{
+   try{
+      const client = await prisma.client.findMany();
+      
+      let response = {
+        status: STATUS_CODE.SUCCESS_CODE,
+        message: "Client has been fetched successfully",
+        data: client,
+      };
+      return response;
+   }catch(errors){
+      console.log("err", errors);
+      let error = {
+        status: STATUS_CODE.SERVER_ERROR_CODE,
+        message: RESPONSE_MESSAGE.INTERNAL_ERROR,
+      };
+      return error;
+   }
+}
+
+const getDashboardJobDetails = async(query:any)=>{
+  try{
+    const page = query?.page ? parseInt(query?.page) : 1;
+    const limit = query?.limit ? parseInt(query?.limit) : 10;
+    const client = query?.client;
+    const process = query?.process ? parseInt(query?.process) : 0;
+    const startDate = query?.startDate;
+    const endDate = query?.endDate;
+
+    let where: any = {};
+
+    // if (client) {
+    //   where.clientId = client;
+    // }
+
+    if (process) {
+      where.jobTypeId = process;
+    }
+
+    if (startDate && endDate) {
+      where.receivedDate = {
+        gte: new Date(startDate), 
+        lte: new Date(endDate),  
+      };
+    } else if (startDate) {
+      where.receivedDate = {
+        gte: new Date(startDate),
+      };
+    } else if (endDate) {
+      where.receivedDate = {
+        lte: new Date(endDate),
+      };
+    }
+
+    const dashboardJob = await prisma.materialInwardDetails.findMany({
+      skip: (page - 1) * limit,
+      take: limit,
+      where: {
+        ...where, 
+        materialInward: client ? {
+          clientId: parseInt(client)
+        } : undefined,
+      },
+      include: {
+        materialInward: {
+          include: {
+            client: true, 
+          },
+        },
+        jobType: true, 
+      },
+    });
+
+    const count: number = await prisma.materialInwardDetails.count({
+      where: {
+        ...where,
+        materialInward: client ? {
+          clientId: parseInt(client)
+        } : undefined,
+      },
+    });
+    let response = {
+      status: STATUS_CODE.SUCCESS_CODE,
+      message: "Job has been fetched successfully",
+      data: { dashboardJob , count },
+    };
+    return response;
+  }catch(errors){
+     console.log("err", errors);
+     let error = {
+       status: STATUS_CODE.SERVER_ERROR_CODE,
+       message: RESPONSE_MESSAGE.INTERNAL_ERROR,
+     };
+     return error;
+  }
+}
 
 
 export {
@@ -815,5 +911,7 @@ export {
   updateInventoryDetails,
   getInventoryDetails,
   getJobTypeMaterialListDetails,
-  getJobTypeMaterialDataListDetails
+  getJobTypeMaterialDataListDetails,
+  getAllClientDetails,
+  getDashboardJobDetails
 };

@@ -34,7 +34,9 @@ import {
   updateInventoryDetails,
   getInventoryDetails,
   getJobTypeMaterialListDetails,
-  getJobTypeMaterialDataListDetails
+  getJobTypeMaterialDataListDetails,
+  getAllClientDetails,
+  getDashboardJobDetails
 } from "../services/CommonService";
 
 const getJobType = async (request: Request, response: Response) => {
@@ -424,6 +426,34 @@ const addInventory = async (request: Request, response: Response) => {
     }
   };
 
+  const getAllClient = async (request: Request, response: Response) => {
+    try {
+      let data = await getAllClientDetails();
+      return sendResponse(request, response, data);
+    } catch (e) {
+      console.log("e", e);
+      return sendResponse(request, response, {
+        status: STATUS_CODE.SERVER_ERROR_CODE,
+        message: RESPONSE_MESSAGE.INTERNAL_ERROR,
+      });
+    }
+  };
+
+  const getDashboardJob = async (request: Request, response: Response) => {
+    try {
+      let inputs = request.query;
+      let data = await getDashboardJobDetails(inputs);
+      return sendResponse(request, response, data);
+    } catch (e) {
+      console.log("e", e);
+      return sendResponse(request, response, {
+        status: STATUS_CODE.SERVER_ERROR_CODE,
+        message: RESPONSE_MESSAGE.INTERNAL_ERROR,
+      });
+    }
+  };
+  
+
 export {
   getJobType,
   addShift,
@@ -454,5 +484,7 @@ export {
   updateInventory,
   getInventory,
   getJobTypeMaterialList,
-  getJobTypeMaterialDataList
+  getJobTypeMaterialDataList,
+  getAllClient,
+  getDashboardJob
 };
