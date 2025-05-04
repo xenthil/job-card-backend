@@ -31,7 +31,7 @@ export function createApp() {
     "https://job-card-frontend-oeiowjygx-xenthils-projects.vercel.app"
   ];
 
-  app.use(cors({
+  /*app.use(cors({
     origin: (origin, callback) => {
       try {
         if (
@@ -48,8 +48,9 @@ export function createApp() {
       }
     },
     credentials: true,
-  }));
-  
+  }));*/
+
+  app.use(cors());  
   app.use(cookieParser());
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
