@@ -35,7 +35,11 @@ export function createApp() {
   app.use(cookieParser());
   app.use(cors({
     origin: (origin, callback) => {
-      if (CLIENT_URLS.includes(origin!) || !origin) {
+      if (
+        !origin ||
+        CLIENT_URLS.includes(origin) ||
+        /\.vercel\.app$/.test(new URL(origin).hostname)
+      ) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
