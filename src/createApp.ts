@@ -28,7 +28,7 @@ export function createApp() {
   const CLIENT_URLS = [
     "http://localhost:3000",
     "http://job-card-zaara.s3-website.ap-south-1.amazonaws.com",
-    "https://job-card-frontend-ruby.vercel.app"
+    "https://job-card-frontend-ruby.vercel.app",
     "https://job-card-frontend-oeiowjygx-xenthils-projects.vercel.app"
   ];
   
