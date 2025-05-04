@@ -23,7 +23,11 @@ export function createApp() {
   global.__uploadDir = __dirname + "/uploads";
   global.__srcDir = __dirname;  
 
-  app.use(cors());  
+  app.use(cors({
+    origin: true,
+    credentials: true
+  }));
+
   app.use(cookieParser());
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
