@@ -22,8 +22,6 @@ export function createApp() {
   const app = express();
   global.__uploadDir = __dirname + "/uploads";
   global.__srcDir = __dirname;
-  
-  // let CLIENT_URLS = ["http://localhost:3000","http://job-card-zaara.s3-website.ap-south-1.amazonaws.com"]
 
   const CLIENT_URLS = [
     "http://localhost:3000",
@@ -32,8 +30,7 @@ export function createApp() {
     "https://job-card-indol.vercel.app",
     "https://job-card-frontend-oeiowjygx-xenthils-projects.vercel.app"
   ];
-  
-  app.use(cookieParser());
+
   app.use(cors({
     origin: (origin, callback) => {
       try {
@@ -44,15 +41,16 @@ export function createApp() {
         ) {
           callback(null, true);
         } else {
-          callback(new Error("Not allowed by CORS"));
+          callback(new Error('Not allowed by CORS'));
         }
       } catch (err) {
-        callback(new Error("Invalid origin"));
+        callback(new Error('CORS origin check failed'));
       }
     },
     credentials: true,
   }));
-
+  
+  app.use(cookieParser());
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
   app.use(compression());
