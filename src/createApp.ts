@@ -36,18 +36,23 @@ export function createApp() {
   app.use(cookieParser());
   app.use(cors({
     origin: (origin, callback) => {
-      if (
-        !origin ||
-        CLIENT_URLS.includes(origin) ||
-        /\.vercel\.app$/.test(new URL(origin).hostname)
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
+      try {
+        if (
+          !origin ||
+          CLIENT_URLS.includes(origin) ||
+          /\.vercel\.app$/.test(new URL(origin).hostname)
+        ) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      } catch (err) {
+        callback(new Error("Invalid origin"));
       }
     },
     credentials: true,
   }));
+
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
   app.use(compression());
